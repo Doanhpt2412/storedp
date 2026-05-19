@@ -1,52 +1,4 @@
-<!DOCTYPE html>
-<html lang="{{ str_replace('_', '-', app()->getLocale()) }}">
-    <head>
-        <meta charset="utf-8">
-        <meta name="viewport" content="width=device-width, initial-scale=1">
-        <title>{{ config('app.name') }} | Dien thoai, laptop, thiet bi cong nghe</title>
-        @vite(['resources/css/app.css', 'resources/js/app.js'])
-    </head>
-    <body>
-        <div class="site-topbar">
-            <div class="container topbar-inner">
-                <p>Xem gia tai Ha Noi va Ho Chi Minh</p>
-                <div class="topbar-actions">
-                    <a href="#">Cua hang gan ban</a>
-                    <a href="#">Tra cuu don hang</a>
-                    <a href="#">Dang nhap</a>
-                    <a href="tel:02466819779" class="topbar-phone">0246 681 9779</a>
-                </div>
-            </div>
-        </div>
-
-        <header class="site-header">
-            <div class="container header-main">
-                <a href="{{ route('home') }}" class="brand-mark" aria-label="StoreDP homepage">
-                    <span>Store</span>DP
-                </a>
-
-                <form class="header-search" action="#" method="get">
-                    <input type="search" name="q" placeholder="Tim iPhone, MacBook, Samsung, phu kien..." aria-label="Tim kiem">
-                    <button type="submit">Tim kiem</button>
-                </form>
-
-                <div class="header-contact">
-                    <div>
-                        <strong>Tu van mua hang</strong>
-                        <span>8:00 - 21:30 moi ngay</span>
-                    </div>
-                    <a href="#" class="cart-link">0 Gio hang</a>
-                </div>
-            </div>
-
-            <nav class="header-nav">
-                <div class="container nav-scroller">
-                    @foreach ($navCategories as $category)
-                        <a href="#">{{ $category }}</a>
-                    @endforeach
-                </div>
-            </nav>
-        </header>
+<x-layouts.app :navCategories="$navCategories ?? []">
 
         <main class="homepage">
             <section class="container hero-layout">
@@ -55,9 +7,9 @@
                     <ul>
                         @foreach ($navCategories as $category)
                             <li>
-                                <a href="#">
+                                <a href="{{ route('categories.show', $category->slug ?? '') }}">
                                     <span>{{ $loop->iteration < 10 ? '0' . $loop->iteration : $loop->iteration }}</span>
-                                    {{ $category }}
+                                    {{ $category->name ?? $category }}
                                 </a>
                             </li>
                         @endforeach
@@ -139,7 +91,7 @@
 
                 <div class="featured-category-grid">
                     @foreach ($featuredCategories as $category)
-                        <a href="#" class="featured-category-card">
+                        <a href="{{ route('categories.show', $category['slug'] ?? '') }}" class="featured-category-card">
                             <span class="featured-category-card__icon">{{ $category['icon'] }}</span>
                             <strong>{{ $category['name'] }}</strong>
                             <small>{{ $category['note'] }}</small>
@@ -188,5 +140,4 @@
                 </section>
             @endforeach
         </main>
-    </body>
-</html>
+</x-layouts.app>

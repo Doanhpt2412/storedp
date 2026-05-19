@@ -49,7 +49,138 @@ if (galleryMain && galleryThumbs.length > 0) {
                 item.classList.remove('is-active');
             });
 
-            thumb.classList.add('is-active');
         });
     });
 }
+
+const variantPickers = document.querySelectorAll('[data-variant-picker]');
+
+variantPickers.forEach((picker) => {
+    let variants = [];
+
+    try {
+        variants = JSON.parse(picker.getAttribute('data-variants') || '[]');
+    } catch (error) {
+        variants = [];
+    }
+
+    if (variants.length === 0) {
+        return;
+    }
+
+    const priceEl = picker.querySelector('[data-variant-price]');
+    const oldPriceEl = picker.querySelector('[data-variant-old-price]');
+    const discountEl = picker.querySelector('[data-variant-discount]');
+    const skuEl = picker.querySelector('[data-variant-sku]');
+    const statusEl = picker.querySelector('[data-variant-status]');
+    const selectedStorageEl = picker.querySelector('[data-selected-storage]');
+    const selectedColorEl = picker.querySelector('[data-selected-color]');
+    const storageButtons = picker.querySelectorAll('[data-storage-option]');
+    const colorButtons = picker.querySelectorAll('[data-color-option]');
+
+    let selectedVariant = variants.find((variant) => variant.active) || variants[0];
+
+    const setButtonState = (buttons, attribute, activeValue) => {
+        buttons.forEach((button) => {
+            const isActive = button.getAttribute(attribute) === activeValue;
+            button.classList.toggle('border-red-500', isActive);
+            button.classList.toggle('bg-red-50', isActive);
+            button.classList.toggle('border-gray-200', !isActive);
+            button.classList.toggle('hover:border-red-400', !isActive);
+
+            button.querySelectorAll('strong, span').forEach((item) => {
+                if (item.hasAttribute('data-active-check')) {
+                    return;
+                }
+
+                item.classList.toggle('text-red-600', isActive);
+                item.classList.toggle('text-gray-800', !isActive && item.tagName === 'STRONG');
+                item.classList.toggle('text-gray-500', !isActive && item.tagName !== 'STRONG');
+            });
+
+            const check = button.querySelector('[data-active-check]');
+            if (check) {
+                check.classList.toggle('hidden', !isActive);
+            }
+        });
+    };
+
+    const renderVariant = (variant) => {
+        selectedVariant = variant;
+
+        if (priceEl) priceEl.textContent = variant.price || '';
+        if (oldPriceEl) {
+            oldPriceEl.textContent = variant.old_price || '';
+            oldPriceEl.classList.toggle('hidden', !variant.old_price);
+        }
+        if (discountEl) {
+            discountEl.textContent = variant.discount || '';
+            discountEl.classList.toggle('hidden', !variant.discount);
+        }
+        if (skuEl) skuEl.textContent = variant.sku || 'N/A';
+        if (statusEl) {
+            statusEl.textContent = variant.status || 'Liên hệ';
+            statusEl.classList.toggle('bg-green-100', Number(variant.stock || 0) > 0);
+            statusEl.classList.toggle('text-green-700', Number(variant.stock || 0) > 0);
+            statusEl.classList.toggle('bg-amber-100', Number(variant.stock || 0) <= 0);
+            statusEl.classList.toggle('text-amber-700', Number(variant.stock || 0) <= 0);
+        }
+        if (selectedStorageEl) selectedStorageEl.textContent = variant.storage || '';
+        if (selectedColorEl) selectedColorEl.textContent = variant.color || '';
+
+        setButtonState(storageButtons, 'data-storage-option', variant.storage || '');
+        setButtonState(colorButtons, 'data-color-option', variant.color || '');
+    };
+
+    const findVariant = ({ storage, color }) => {
+        return variants.find((variant) => variant.storage === storage && variant.color === color)
+            || variants.find((variant) => storage && variant.storage === storage)
+            || variants.find((variant) => color && variant.color === color)
+            || selectedVariant;
+    };
+
+    storageButtons.forEach((button) => {
+        button.addEventListener('click', () => {
+            renderVariant(findVariant({
+                storage: button.getAttribute('data-storage-option'),
+                color: selectedVariant.color,
+            }));
+        });
+    });
+
+    colorButtons.forEach((button) => {
+        button.addEventListener('click', () => {
+            renderVariant(findVariant({
+                storage: selectedVariant.storage,
+                color: button.getAttribute('data-color-option'),
+            }));
+        });
+    });
+
+    renderVariant(selectedVariant);
+});
+
+// Modal Logic
+const modalOpens = document.querySelectorAll('[data-modal-open]');
+const modalCloses = document.querySelectorAll('[data-modal-close]');
+
+modalOpens.forEach(btn => {
+    btn.addEventListener('click', () => {
+        const modalId = btn.getAttribute('data-modal-open');
+        const modal = document.getElementById(modalId);
+        if (modal) {
+            modal.classList.add('is-open');
+            document.body.style.overflow = 'hidden'; // Prevent scrolling
+        }
+    });
+});
+
+modalCloses.forEach(btn => {
+    btn.addEventListener('click', (e) => {
+        const modal = btn.closest('.modal');
+        if (modal) {
+            modal.classList.remove('is-open');
+            document.body.style.overflow = '';
+        }
+    });
+});

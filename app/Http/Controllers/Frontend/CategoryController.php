@@ -21,12 +21,16 @@ class CategoryController extends Controller
         }
 
         $baseProducts = collect($catalog->listingProducts())
-            ->filter(function (array $product) use ($currentPath): bool {
+            ->filter(function (array $product) use ($currentPath, $currentNode): bool {
                 if ($currentPath === '') {
                     return true;
                 }
 
-                return str_starts_with($product['taxonomy_path'], $currentPath);
+                if (! empty($currentNode['is_brand'])) {
+                    return strtolower($product['brand_slug'] ?? '') === strtolower($currentNode['slug']);
+                }
+
+                return str_starts_with($product['taxonomy_path'], $currentNode['path'] ?? $currentPath);
             })
             ->values();
 
@@ -34,15 +38,27 @@ class CategoryController extends Controller
         $filters = $this->buildFilters($baseProducts);
         $childPaths = $catalog->childTaxonomyPaths($currentPath);
 
+        // Lấy danh sách thương hiệu động dựa trên cấu hình node hiện tại
+        if (! empty($currentNode['is_brand']) || $currentPath === '') {
+            $brands = \App\Models\ProductBrand::where('is_active', true)->orderBy('order')->get();
+        } else {
+            $activeBrandSlugs = $baseProducts->pluck('brand_slug')->unique()->filter()->all();
+            $brands = \App\Models\ProductBrand::where('is_active', true)
+                ->whereIn('slug', $activeBrandSlugs)
+                ->orderBy('order')
+                ->get();
+        }
+
         return view('frontend.categories.show', [
             'navCategories' => $catalog->navCategories(),
             'currentNode' => $currentNode,
             'childPaths' => $childPaths,
             'filters' => $filters,
+            'brands' => $brands,
             'products' => $products->values()->all(),
             'query' => (string) $request->string('q'),
             'selectedFilters' => [
-                'brand' => $request->string('brand')->toString(),
+                'brand' => ! empty($currentNode['is_brand']) ? $currentNode['slug'] : $request->string('brand')->toString(),
                 'line' => $request->string('line')->toString(),
                 'series' => $request->string('series')->toString(),
                 'price' => $request->string('price')->toString(),

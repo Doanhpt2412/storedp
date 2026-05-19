@@ -2,6 +2,9 @@
 
 namespace App\Support;
 
+use App\Models\Product;
+use App\Models\ProductSpecification;
+use App\Models\ProductVariant;
 use Illuminate\Support\Collection;
 
 class ProductCatalog
@@ -38,19 +41,56 @@ class ProductCatalog
 
     public function featuredCategories(): array
     {
+        try {
+            if (class_exists(\App\Models\ProductCategory::class)) {
+                $categories = \App\Models\ProductCategory::where('is_active', true)
+                    ->whereNotNull('icon')
+                    ->orderBy('order')
+                    ->take(6)
+                    ->get();
+                if ($categories->count() > 0) {
+                    return $categories->map(fn($cat) => [
+                        'name' => $cat->name,
+                        'slug' => $cat->slug,
+                        'icon' => strtoupper(substr($cat->icon, 0, 2)),
+                        'note' => $cat->description ?? 'Đầy đủ phiên bản chính hãng',
+                    ])->all();
+                }
+            }
+        } catch (\Exception $e) {
+            // Fallback
+        }
+
         return [
-            ['name' => 'iPhone', 'icon' => 'IP', 'note' => '17, 16, 15 Series'],
-            ['name' => 'Macbook', 'icon' => 'MB', 'note' => 'Air va Pro M4'],
-            ['name' => 'iPad', 'icon' => 'PD', 'note' => 'Pro, Air, Mini'],
-            ['name' => 'Watch', 'icon' => 'WT', 'note' => 'Ultra, Series, SE'],
-            ['name' => 'Am thanh', 'icon' => 'AU', 'note' => 'AirPods, Loa, Tai nghe'],
-            ['name' => 'Nha thong minh', 'icon' => 'SM', 'note' => 'Robot, Camera, TV'],
+            ['name' => 'iPhone', 'slug' => 'iphone', 'icon' => 'IP', 'note' => '17, 16, 15 Series'],
+            ['name' => 'Macbook', 'slug' => 'mac', 'icon' => 'MB', 'note' => 'Air va Pro M4'],
+            ['name' => 'iPad', 'slug' => 'ipad', 'icon' => 'PD', 'note' => 'Pro, Air, Mini'],
+            ['name' => 'Watch', 'slug' => 'watch', 'icon' => 'WT', 'note' => 'Ultra, Series, SE'],
+            ['name' => 'Am thanh', 'slug' => 'am-thanh', 'icon' => 'AU', 'note' => 'AirPods, Loa, Tai nghe'],
+            ['name' => 'Nha thong minh', 'slug' => 'nha-thong-minh', 'icon' => 'SM', 'note' => 'Robot, Camera, TV'],
         ];
     }
 
     public function navCategories(): array
     {
-        return [
+        try {
+            if (class_exists(\App\Models\ProductCategory::class)) {
+                $categories = \App\Models\ProductCategory::where('show_in_nav', true)
+                    ->where('is_active', true)
+                    ->orderBy('order')
+                    ->get();
+                if ($categories->count() > 0) {
+                    return $categories->all();
+                }
+            }
+        } catch (\Exception $e) {
+            // Fallback
+        }
+
+        return array_map(fn($name) => (object)[
+            'name' => $name,
+            'slug' => \Illuminate\Support\Str::slug($name),
+        ], [
             'Apple',
             'Dien thoai',
             'May cu',
@@ -61,7 +101,7 @@ class ProductCatalog
             'Phu kien',
             'Am thanh',
             'Khuyen mai',
-        ];
+        ]);
     }
 
     public function serviceHighlights(): array
@@ -97,6 +137,23 @@ class ProductCatalog
 
     public function productSections(): array
     {
+        if ($this->hasDatabaseProducts()) {
+            $products = Product::with(['brand', 'category.parent.parent', 'variants'])
+                ->where('status', Product::STATUS_ACTIVE)
+                ->latest()
+                ->take(12)
+                ->get();
+
+            return [
+                [
+                    'title' => 'Sản phẩm mới cập nhật',
+                    'subtitle' => 'Dữ liệu đang được lấy trực tiếp từ module quản lý sản phẩm.',
+                    'badge' => 'Database',
+                    'products' => $products->map(fn (Product $product) => $this->dbProductCard($product))->all(),
+                ],
+            ];
+        }
+
         return [
             [
                 'title' => 'Dien thoai noi bat',
@@ -564,6 +621,15 @@ class ProductCatalog
 
     public function find(string $slug): ?array
     {
+        $dbProduct = Product::with(['brand', 'category.parent.parent', 'variants', 'specifications'])
+            ->where('slug', $slug)
+            ->where('status', '!=', Product::STATUS_DRAFT)
+            ->first();
+
+        if ($dbProduct) {
+            return $this->dbProductDetail($dbProduct);
+        }
+
         $product = $this->allProducts()[$slug] ?? null;
 
         if (! $product) {
@@ -579,6 +645,22 @@ class ProductCatalog
 
     public function related(string $slug, int $limit = 4): array
     {
+        $dbProduct = Product::with('category')
+            ->where('slug', $slug)
+            ->where('status', '!=', Product::STATUS_DRAFT)
+            ->first();
+
+        if ($dbProduct) {
+            return Product::with(['brand', 'category.parent.parent', 'variants'])
+                ->where('status', Product::STATUS_ACTIVE)
+                ->where('id', '!=', $dbProduct->id)
+                ->when($dbProduct->product_category_id, fn ($query) => $query->where('product_category_id', $dbProduct->product_category_id))
+                ->take($limit)
+                ->get()
+                ->map(fn (Product $product) => $this->dbProductCard($product))
+                ->all();
+        }
+
         $currentProduct = $this->find($slug);
 
         if (! $currentProduct) {
@@ -596,6 +678,38 @@ class ProductCatalog
 
     public function taxonomyTree(): array
     {
+        try {
+            if (class_exists(\App\Models\ProductCategory::class)) {
+                $roots = \App\Models\ProductCategory::with('allChildren')
+                    ->whereNull('parent_id')
+                    ->where('is_active', true)
+                    ->orderBy('order')
+                    ->get();
+
+                if ($roots->count() > 0) {
+                    $buildTree = function ($categories) use (&$buildTree) {
+                        $tree = [];
+                        foreach ($categories as $cat) {
+                            if (!$cat->is_active) continue;
+                            $node = [
+                                'slug' => $cat->slug,
+                                'label' => $cat->name,
+                            ];
+                            if ($cat->allChildren && $cat->allChildren->count() > 0) {
+                                $node['children'] = $buildTree($cat->allChildren);
+                            }
+                            $tree[] = $node;
+                        }
+                        return $tree;
+                    };
+
+                    return $buildTree($roots);
+                }
+            }
+        } catch (\Exception $e) {
+            // Fallback
+        }
+
         return [
             [
                 'slug' => 'apple',
@@ -623,8 +737,8 @@ class ProductCatalog
                         ],
                     ],
                     [
-                        'slug' => 'mac',
-                        'label' => 'Mac',
+                        'slug' => 'laptop',
+                        'label' => 'Laptop',
                         'children' => [
                             [
                                 'slug' => 'macbook-air-series',
@@ -723,15 +837,24 @@ class ProductCatalog
 
     public function listingProducts(): array
     {
+        if ($this->hasDatabaseProducts()) {
+            return Product::with(['brand', 'category.parent.parent', 'variants'])
+                ->where('status', Product::STATUS_ACTIVE)
+                ->latest()
+                ->get()
+                ->map(fn (Product $product) => $this->dbListingProduct($product))
+                ->all();
+        }
+
         return [
-            $this->listingProduct('iphone-16-pro-max-256gb', 'apple/iphone/iphone-16-series/iphone-16-pro-max', 30990000),
-            $this->listingProduct('iphone-15-128gb', 'apple/iphone/iphone-15-series/iphone-15', 17390000),
-            $this->listingProduct('samsung-galaxy-s25-ultra-512gb', 'samsung/galaxy-s/galaxy-s25-series/galaxy-s25-ultra', 27490000),
-            $this->listingProduct('xiaomi-15-ultra-512gb', 'xiaomi/xiaomi-phone/xiaomi-15-series/xiaomi-15-ultra', 22790000),
-            $this->listingProduct('macbook-air-m4-13-16gb-256gb', 'apple/mac/macbook-air-series/macbook-air-m4', 26990000),
-            $this->listingProduct('macbook-pro-m4-14-16gb-512gb', 'apple/mac/macbook-pro-series/macbook-pro-m4', 39490000),
-            $this->listingProduct('mac-mini-m4-16gb-256gb', 'apple/mac/desktop-mac/mac-mini', 15690000),
-            $this->listingProduct('imac-m4-24-16gb-512gb', 'apple/mac/desktop-mac/imac', 36990000),
+            $this->listingProduct('iphone-16-pro-max-256gb', 'dien-thoai/iphone-series/iphone-16-pro-max', 30990000),
+            $this->listingProduct('iphone-15-128gb', 'dien-thoai/iphone-series/iphone-15', 17390000),
+            $this->listingProduct('samsung-galaxy-s25-ultra-512gb', 'dien-thoai/galaxy-s-series/galaxy-s25-ultra', 27490000),
+            $this->listingProduct('xiaomi-15-ultra-512gb', 'dien-thoai/xiaomi-series/xiaomi-15-ultra', 22790000),
+            $this->listingProduct('macbook-air-m4-13-16gb-256gb', 'laptop/macbook-air-series/macbook-air-m4', 26990000),
+            $this->listingProduct('macbook-pro-m4-14-16gb-512gb', 'laptop/macbook-pro-series/macbook-pro-m4', 39490000),
+            $this->listingProduct('mac-mini-m4-16gb-256gb', 'laptop/desktop-mac/mac-mini', 15690000),
+            $this->listingProduct('imac-m4-24-16gb-512gb', 'laptop/desktop-mac/imac', 36990000),
         ];
     }
 
@@ -741,13 +864,47 @@ class ProductCatalog
             return [
                 'path' => '',
                 'slug' => '',
-                'label' => 'Tat ca san pham',
+                'label' => 'Tất cả sản phẩm',
                 'level' => 0,
                 'breadcrumbs' => [],
             ];
         }
 
-        return $this->taxonomyIndex()[$path] ?? null;
+        $lastSegment = basename($path);
+
+        // 1. Check if the path is a top-level brand slug first dynamically from Database
+        try {
+            if (class_exists(\App\Models\ProductBrand::class)) {
+                $brand = \App\Models\ProductBrand::where('slug', $lastSegment)->first();
+                if ($brand) {
+                    return [
+                        'path' => $brand->slug,
+                        'slug' => $brand->slug,
+                        'label' => 'Thương hiệu ' . $brand->name,
+                        'level' => 1,
+                        'breadcrumbs' => [
+                            ['slug' => $brand->slug, 'label' => $brand->name]
+                        ],
+                        'is_brand' => true,
+                    ];
+                }
+            }
+        } catch (\Exception $e) {}
+
+        // 2. Try standard taxonomy index first
+        $node = $this->taxonomyIndex()[$path] ?? null;
+        if ($node) {
+            return $node;
+        }
+
+        // 3. Try to match by slug in taxonomyIndex (for flat URLs of categories)
+        foreach ($this->taxonomyIndex() as $nodePath => $n) {
+            if ($n['slug'] === $lastSegment) {
+                return $n;
+            }
+        }
+
+        return null;
     }
 
     public function childTaxonomyPaths(string $path = ''): array
@@ -764,6 +921,11 @@ class ProductCatalog
             return [];
         }
 
+        // If it is a brand page, there are no physical sub-taxonomy paths under it
+        if (! empty($baseNode['is_brand'])) {
+            return [];
+        }
+
         return array_values(array_filter($all, function (array $node) use ($path, $baseNode): bool {
             if ($node['level'] !== $baseNode['level'] + 1) {
                 return false;
@@ -775,6 +937,20 @@ class ProductCatalog
 
     public function productBreadcrumbs(string $slug): array
     {
+        $dbProduct = Product::with('category.parent.parent')
+            ->where('slug', $slug)
+            ->where('status', '!=', Product::STATUS_DRAFT)
+            ->first();
+
+        if ($dbProduct) {
+            return $this->categoryTrail($dbProduct->category)
+                ->map(fn ($category) => [
+                    'slug' => $category->slug,
+                    'label' => $category->name,
+                ])
+                ->all();
+        }
+
         $product = collect($this->listingProducts())->firstWhere('slug', $slug);
 
         if (! $product) {
@@ -817,14 +993,235 @@ class ProductCatalog
             ...$this->productCard($slug),
             'price_value' => $priceValue,
             'taxonomy_path' => $taxonomyPath,
-            'brand_slug' => $breadcrumbs[0]['slug'] ?? null,
-            'brand_label' => $breadcrumbs[0]['label'] ?? $product['brand'],
-            'line_slug' => $breadcrumbs[1]['slug'] ?? null,
-            'line_label' => $breadcrumbs[1]['label'] ?? $product['category'],
-            'series_slug' => $breadcrumbs[2]['slug'] ?? null,
-            'series_label' => $breadcrumbs[2]['label'] ?? null,
-            'model_slug' => $breadcrumbs[3]['slug'] ?? null,
-            'model_label' => $breadcrumbs[3]['label'] ?? $product['name'],
+            'brand_slug' => strtolower($product['brand'] ?? ''),
+            'brand_label' => $product['brand'] ?? '',
+            'line_slug' => $breadcrumbs[0]['slug'] ?? null, // dien-thoai / laptop
+            'line_label' => $breadcrumbs[0]['label'] ?? null,
+            'series_slug' => $breadcrumbs[1]['slug'] ?? null, // iphone-series / macbook-air-series
+            'series_label' => $breadcrumbs[1]['label'] ?? null,
+            'model_slug' => $breadcrumbs[2]['slug'] ?? null,
+            'model_label' => $breadcrumbs[2]['label'] ?? $product['name'],
+        ];
+    }
+
+    private function hasDatabaseProducts(): bool
+    {
+        try {
+            return Product::where('status', Product::STATUS_ACTIVE)->exists();
+        } catch (\Throwable $e) {
+            return false;
+        }
+    }
+
+    private function dbProductCard(Product $product): array
+    {
+        $variant = $this->primaryVariant($product);
+        $price = $this->variantPrice($variant);
+        $oldPrice = $variant?->price_original ? (float) $variant->price_original : null;
+
+        return [
+            'slug' => $product->slug,
+            'name' => $product->name,
+            'brand' => $product->brand?->name ?? '',
+            'category' => $product->category?->name ?? '',
+            'color' => $variant?->color_name ?? '',
+            'storage' => $variant?->storage ?? '',
+            'price' => $this->formatPrice($price),
+            'old_price' => $oldPrice && $oldPrice > $price ? $this->formatPrice($oldPrice) : null,
+            'discount' => $this->discountLabel($oldPrice, $price),
+            'rating' => 5,
+            'reviews_count' => 0,
+            'tag' => $product->is_preorder ? 'Đặt trước' : 'Mới 100%',
+            'release_label' => optional($product->created_at)->format('m/Y') ?? '2026',
+            'image' => $product->thumbnail ?: $this->sampleImage(),
+            'benefits' => $product->highlights ?: ['Trả góp 0%', 'Bảo hành chính hãng', 'Hỗ trợ thu cũ đổi mới'],
+        ];
+    }
+
+    private function dbProductDetail(Product $product): array
+    {
+        $card = $this->dbProductCard($product);
+        $variant = $this->primaryVariant($product);
+        $gallery = array_values(array_filter([
+            ...($product->images ?: []),
+            $product->thumbnail,
+        ]));
+
+        if (empty($gallery)) {
+            $gallery = $this->sampleGallery();
+        }
+
+        $specs = $product->specifications
+            ->map(fn (ProductSpecification $spec) => [
+                'label' => $spec->name,
+                'value' => $spec->value,
+                'group' => $spec->group_name,
+            ])
+            ->filter(fn (array $spec) => filled($spec['label']) && filled($spec['value']))
+            ->values()
+            ->all();
+
+        return [
+            ...$card,
+            'sku' => $variant?->sku ?? 'N/A',
+            'status' => $product->is_preorder ? 'Đang nhận đặt trước' : ($variant && $variant->stock > 0 ? 'Còn hàng' : 'Liên hệ'),
+            'gallery' => $gallery,
+            'highlights' => $product->highlights ?: [$product->summary ?: 'Sản phẩm chính hãng, đầy đủ chính sách bảo hành.'],
+            'variants' => $this->variantOptions($product),
+            'colors' => $this->colorOptions($product),
+            'variant_matrix' => $this->variantMatrix($product),
+            'technical_specs' => ! empty($specs) ? $specs : [
+                ['label' => 'Danh mục', 'value' => $product->category?->name ?? 'Đang cập nhật'],
+                ['label' => 'Hãng sản xuất', 'value' => $product->brand?->name ?? 'Đang cập nhật'],
+            ],
+            'benefits' => $product->highlights ?: ['Trả góp 0%', 'Thu cũ đổi mới trợ giá', $product->warranty_policy ?: 'Bảo hành chính hãng'],
+            'in_the_box' => ['Sản phẩm', 'Phụ kiện tiêu chuẩn', 'Phiếu bảo hành'],
+            'description_sections' => $this->descriptionSections($product),
+        ];
+    }
+
+    private function dbListingProduct(Product $product): array
+    {
+        $trail = $this->categoryTrail($product->category);
+        $breadcrumbs = $trail->map(fn ($category) => [
+            'slug' => $category->slug,
+            'label' => $category->name,
+        ])->values();
+        $variant = $this->primaryVariant($product);
+
+        return [
+            ...$this->dbProductCard($product),
+            'price_value' => (int) $this->variantPrice($variant),
+            'taxonomy_path' => $trail->pluck('slug')->implode('/'),
+            'brand_slug' => $product->brand?->slug ?? '',
+            'brand_label' => $product->brand?->name ?? '',
+            'line_slug' => $breadcrumbs[0]['slug'] ?? null,
+            'line_label' => $breadcrumbs[0]['label'] ?? null,
+            'series_slug' => $breadcrumbs[1]['slug'] ?? null,
+            'series_label' => $breadcrumbs[1]['label'] ?? null,
+            'model_slug' => $breadcrumbs[2]['slug'] ?? null,
+            'model_label' => $breadcrumbs[2]['label'] ?? $product->name,
+        ];
+    }
+
+    private function primaryVariant(Product $product): ?ProductVariant
+    {
+        $variants = $product->relationLoaded('variants') ? $product->variants : $product->variants()->get();
+
+        return $variants
+            ->sortBy(fn (ProductVariant $variant) => $variant->price_sale ?? $variant->price_original)
+            ->first();
+    }
+
+    private function variantPrice(?ProductVariant $variant): float
+    {
+        if (! $variant) {
+            return 0;
+        }
+
+        return (float) ($variant->price_sale ?: $variant->price_original);
+    }
+
+    private function variantOptions(Product $product): array
+    {
+        $primary = $this->primaryVariant($product);
+
+        return $product->variants
+            ->groupBy('storage')
+            ->filter()
+            ->map(function (Collection $variants, string $storage) use ($primary) {
+                $cheapest = $variants->sortBy(fn (ProductVariant $variant) => $this->variantPrice($variant))->first();
+
+                return [
+                'label' => $storage,
+                'active' => $storage === $primary?->storage,
+                    'price' => $this->formatPrice($this->variantPrice($cheapest)),
+                ];
+            })
+            ->values()
+            ->all();
+    }
+
+    private function colorOptions(Product $product): array
+    {
+        $primary = $this->primaryVariant($product);
+
+        return $product->variants
+            ->filter(fn (ProductVariant $variant) => filled($variant->color_name))
+            ->unique('color_name')
+            ->values()
+            ->map(fn (ProductVariant $variant) => [
+                'label' => $variant->color_name,
+                'hex' => $variant->color_code ?: '#e5e7eb',
+                'active' => $variant->color_name === $primary?->color_name,
+                'price' => $this->formatPrice($this->variantPrice($variant)),
+            ])
+            ->all();
+    }
+
+    private function variantMatrix(Product $product): array
+    {
+        $primary = $this->primaryVariant($product);
+
+        return $product->variants
+            ->values()
+            ->map(fn (ProductVariant $variant) => [
+                'sku' => $variant->sku,
+                'storage' => $variant->storage,
+                'color' => $variant->color_name,
+                'color_hex' => $variant->color_code ?: '#e5e7eb',
+                'price' => $this->formatPrice($this->variantPrice($variant)),
+                'old_price' => (float) $variant->price_original > $this->variantPrice($variant) ? $this->formatPrice((float) $variant->price_original) : '',
+                'discount' => $this->discountLabel((float) $variant->price_original, $this->variantPrice($variant)),
+                'stock' => $variant->stock,
+                'status' => $variant->stock > 0 ? 'Còn hàng' : 'Liên hệ',
+                'active' => $variant->id === $primary?->id,
+            ])
+            ->all();
+    }
+
+    private function categoryTrail($category): Collection
+    {
+        $trail = collect();
+
+        while ($category) {
+            $trail->prepend($category);
+            $category = $category->parent;
+        }
+
+        return $trail->values();
+    }
+
+    private function formatPrice(float|int|null $price): string
+    {
+        return number_format((float) $price, 0, ',', '.') . 'đ';
+    }
+
+    private function discountLabel(?float $oldPrice, float $price): string
+    {
+        if (! $oldPrice || $oldPrice <= $price || $price <= 0) {
+            return '';
+        }
+
+        return '-' . round((($oldPrice - $price) / $oldPrice) * 100) . '%';
+    }
+
+    private function descriptionSections(Product $product): array
+    {
+        if (filled($product->description)) {
+            return [
+                [
+                    'title' => 'Đánh giá chi tiết',
+                    'content' => [strip_tags($product->description)],
+                ],
+            ];
+        }
+
+        return [
+            [
+                'title' => 'Tổng quan sản phẩm',
+                'content' => [$product->summary ?: 'Thông tin chi tiết đang được cập nhật từ hệ thống quản trị.'],
+            ],
         ];
     }
 
