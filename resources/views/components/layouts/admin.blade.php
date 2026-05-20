@@ -51,10 +51,13 @@
                 <span class="font-medium text-sm">Dashboard</span>
             </a>
 
-            <a href="#" class="flex items-center gap-3 px-3 py-2.5 rounded-lg text-slate-400 hover:text-slate-100 hover:bg-slate-800 transition-all">
+            <a href="{{ route('admin.orders.index') }}" class="flex items-center gap-3 px-3 py-2.5 rounded-lg {{ request()->routeIs('admin.orders.*') ? 'text-white bg-blue-600 shadow-md shadow-blue-500/20' : 'text-slate-400 hover:text-slate-100 hover:bg-slate-800' }} transition-all">
                 <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 2 3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4Z"/><path d="M3 6h18"/><path d="M16 10a4 4 0 0 1-8 0"/></svg>
                 <span class="font-medium text-sm">Đơn hàng</span>
-                <span class="ml-auto bg-blue-600/20 text-blue-400 py-0.5 px-2 rounded-full text-[10px] font-bold">12</span>
+                @php $pendingCount = \App\Models\Order::where('order_status', 'pending')->count(); @endphp
+                @if($pendingCount > 0)
+                    <span class="ml-auto bg-red-500 text-white py-0.5 px-2 rounded-full text-[10px] font-bold shadow-sm shadow-red-500/50">{{ $pendingCount }}</span>
+                @endif
             </a>
 
             @php
@@ -86,6 +89,31 @@
                         Hãng sản xuất
                     </a>
                     @endcan
+                </div>
+            </details>
+
+            @php
+                $isPostActive = request()->routeIs('admin.post-categories.*') || request()->routeIs('admin.posts.*');
+            @endphp
+            <details class="group [&_summary::-webkit-details-marker]:hidden" {{ $isPostActive ? 'open' : '' }}>
+                <summary class="flex items-center justify-between px-3 py-2.5 rounded-lg {{ $isPostActive ? 'text-white bg-slate-800/80 font-medium' : 'text-slate-400 hover:text-slate-100 hover:bg-slate-800' }} transition-all cursor-pointer list-none select-none">
+                    <div class="flex items-center gap-3">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 22h16a2 2 0 0 0 2-2V4a2 2 0 0 0-2-2H8a2 2 0 0 0-2 2v16a2 2 0 0 1-2 2Zm0 0a2 2 0 0 1-2-2v-9c0-1.1.9-2 2-2h2"/><path d="M18 14h-8"/><path d="M15 18h-5"/><path d="M10 6h8v4h-8V6Z"/></svg>
+                        <span class="font-medium text-sm">Tin tức & Bài viết</span>
+                    </div>
+                    <span class="transition-transform duration-300 group-open:rotate-180">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m6 9 6 6 6-6"/></svg>
+                    </span>
+                </summary>
+                <div class="mt-1 pl-4 space-y-1">
+                    <a href="{{ route('admin.posts.index') }}" class="flex items-center gap-3 px-3 py-2 rounded-lg {{ request()->routeIs('admin.posts.*') ? 'text-white bg-blue-600 shadow-md shadow-blue-500/20' : 'text-slate-400 hover:text-slate-100 hover:bg-slate-800' }} transition-all text-xs font-semibold">
+                        <span class="w-1.5 h-1.5 rounded-full {{ request()->routeIs('admin.posts.*') ? 'bg-white' : 'bg-slate-500' }}"></span>
+                        Tất cả bài viết
+                    </a>
+                    <a href="{{ route('admin.post-categories.index') }}" class="flex items-center gap-3 px-3 py-2 rounded-lg {{ request()->routeIs('admin.post-categories.*') ? 'text-white bg-blue-600 shadow-md shadow-blue-500/20' : 'text-slate-400 hover:text-slate-100 hover:bg-slate-800' }} transition-all text-xs font-semibold">
+                        <span class="w-1.5 h-1.5 rounded-full {{ request()->routeIs('admin.post-categories.*') ? 'bg-white' : 'bg-slate-500' }}"></span>
+                        Chuyên mục
+                    </a>
                 </div>
             </details>
 

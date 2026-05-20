@@ -96,6 +96,11 @@ class CartManager
         return $this->cookie($items);
     }
 
+    public function clear(): Cookie
+    {
+        return $this->cookie([]);
+    }
+
     public function formatPrice(int $amount): string
     {
         return number_format($amount, 0, ',', '.') . 'đ';

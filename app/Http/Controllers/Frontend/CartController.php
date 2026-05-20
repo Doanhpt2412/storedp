@@ -22,7 +22,7 @@ class CartController extends Controller
         ]);
     }
 
-    public function store(Request $request, CartManager $cart, ProductCatalog $catalog): RedirectResponse
+    public function store(Request $request, CartManager $cart, ProductCatalog $catalog): \Symfony\Component\HttpFoundation\Response
     {
         $validated = $request->validate([
             'slug' => ['required', 'string'],
@@ -53,6 +53,23 @@ class CartController extends Controller
             'price_value' => $validated['price_value'] ?? null,
         ]);
 
+        if ($request->wantsJson() || $request->ajax()) {
+            return response()->json([
+                'success' => true,
+                'message' => 'Đã thêm sản phẩm vào giỏ hàng.',
+                'cart_count' => $cart->count(),
+                'cart_subtotal' => $cart->formatPrice($cart->subtotal()),
+                'product' => [
+                    'name' => $product['name'],
+                    'image' => $product['image'] ?? '',
+                    'price' => $validated['price'] ?? $product['price'] ?? '',
+                    'storage' => $validated['storage'] ?? '',
+                    'color' => $validated['color'] ?? '',
+                    'quantity' => (int) ($validated['quantity'] ?? 1),
+                ]
+            ])->withCookie($cookie);
+        }
+
         $redirect = ($validated['redirect_to'] ?? '') === 'cart'
             ? redirect()->route('cart.index')
             : back();
@@ -62,7 +79,7 @@ class CartController extends Controller
             ->with('cart_success', 'Đã thêm sản phẩm vào giỏ hàng.');
     }
 
-    public function update(Request $request, CartManager $cart, string $lineId): RedirectResponse
+    public function update(Request $request, CartManager $cart, string $lineId): \Symfony\Component\HttpFoundation\Response
     {
         $validated = $request->validate([
             'quantity' => ['required', 'integer', 'min:0', 'max:99'],
@@ -70,14 +87,49 @@ class CartController extends Controller
 
         $cookie = $cart->update($lineId, (int) $validated['quantity']);
 
+        if ($request->wantsJson() || $request->ajax()) {
+            // Find the updated item to calculate its subtotal
+            $items = $cart->items();
+            $updatedItem = null;
+            foreach ($items as $item) {
+                if (($item['line_id'] ?? null) === $lineId) {
+                    $updatedItem = $item;
+                    break;
+                }
+            }
+
+            $itemSubtotal = $updatedItem ? ($updatedItem['price_value'] * $updatedItem['quantity']) : 0;
+
+            return response()->json([
+                'success' => true,
+                'message' => $validated['quantity'] <= 0 ? 'Đã xóa sản phẩm khỏi giỏ hàng.' : 'Đã cập nhật số lượng sản phẩm.',
+                'cart_count' => $cart->count(),
+                'cart_subtotal' => $cart->subtotal(),
+                'formatted_cart_subtotal' => number_format($cart->subtotal(), 0, ',', '.') . 'đ',
+                'item_quantity' => (int) $validated['quantity'],
+                'item_subtotal' => $itemSubtotal,
+                'formatted_item_subtotal' => number_format($itemSubtotal, 0, ',', '.') . 'đ'
+            ])->withCookie($cookie);
+        }
+
         return back()
             ->withCookie($cookie)
             ->with('cart_success', 'Đã cập nhật giỏ hàng.');
     }
 
-    public function destroy(CartManager $cart, string $lineId): RedirectResponse
+    public function destroy(Request $request, CartManager $cart, string $lineId): \Symfony\Component\HttpFoundation\Response
     {
         $cookie = $cart->remove($lineId);
+
+        if ($request->wantsJson() || $request->ajax()) {
+            return response()->json([
+                'success' => true,
+                'message' => 'Đã xóa sản phẩm khỏi giỏ hàng.',
+                'cart_count' => $cart->count(),
+                'cart_subtotal' => $cart->subtotal(),
+                'formatted_cart_subtotal' => number_format($cart->subtotal(), 0, ',', '.') . 'đ',
+            ])->withCookie($cookie);
+        }
 
         return back()
             ->withCookie($cookie)

@@ -207,3 +207,446 @@ modalCloses.forEach(btn => {
         }
     });
 });
+
+// ==========================================
+// TOAST SYSTEM & AJAX CART FUNCTIONALITY
+// ==========================================
+
+const toastContainer = document.getElementById('toast-container');
+
+// Global showToast function
+window.showToast = function ({ type = 'success', title = '', message = '', product = null, duration = 4000 }) {
+    if (!toastContainer) return;
+
+    const toast = document.createElement('div');
+    toast.className = `toast-item toast-item--${type}`;
+    
+    // Status titles in Vietnamese
+    const defaultTitle = type === 'success' ? 'Thành công!' : type === 'error' ? 'Lỗi hệ thống' : 'Thông tin';
+    const displayTitle = title || defaultTitle;
+
+    // SVG icons based on type
+    let iconSvg = '';
+    if (type === 'success') {
+        iconSvg = `<svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>`;
+    } else if (type === 'error') {
+        iconSvg = `<svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>`;
+    } else {
+        iconSvg = `<svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="16" x2="12" y2="12"/><line x1="12" y1="8" x2="12.01" y2="8"/></svg>`;
+    }
+
+    // HTML Content for the Toast
+    let productHtml = '';
+    if (product) {
+        const metaInfo = [product.storage, product.color].filter(Boolean).join(' | ');
+        productHtml = `
+            <div class="toast-product">
+                ${product.image ? `<img src="${product.image}" class="toast-product-img" alt="${product.name}">` : ''}
+                <div class="toast-product-info">
+                    <span class="toast-product-name">${product.name}</span>
+                    ${metaInfo ? `<span class="toast-product-meta">${metaInfo}</span>` : ''}
+                    <span class="toast-product-price">${product.price}</span>
+                </div>
+            </div>
+        `;
+    }
+
+    // Action button for successful cart add
+    let actionsHtml = '';
+    if (type === 'success' && product) {
+        actionsHtml = `
+            <div class="toast-actions">
+                <a href="/gio-hang" class="toast-btn-primary">Xem giỏ hàng</a>
+                <button class="toast-btn-secondary" onclick="this.closest('.toast-item').querySelector('.toast-close').click()">Đóng</button>
+            </div>
+        `;
+    }
+
+    toast.innerHTML = `
+        <div class="toast-icon">
+            ${iconSvg}
+        </div>
+        <div class="toast-content">
+            <h4 class="toast-title">${displayTitle}</h4>
+            <p class="toast-message">${message}</p>
+            ${productHtml}
+            ${actionsHtml}
+        </div>
+        <button class="toast-close" aria-label="Đóng">&times;</button>
+        <div class="toast-progress" style="animation-duration: ${duration}ms"></div>
+    `;
+
+    toastContainer.appendChild(toast);
+
+    // Trigger enter animation
+    setTimeout(() => {
+        toast.classList.add('is-show');
+    }, 10);
+
+    // Auto close timer
+    const autoCloseTimer = setTimeout(() => {
+        closeToast(toast);
+    }, duration);
+
+    // Close button click
+    toast.querySelector('.toast-close').addEventListener('click', () => {
+        clearTimeout(autoCloseTimer);
+        closeToast(toast);
+    });
+};
+
+function closeToast(toast) {
+    toast.classList.remove('is-show');
+    toast.classList.add('is-hide');
+    
+    // Smooth height collapse
+    toast.addEventListener('transitionend', (e) => {
+        if (e.propertyName === 'transform') {
+            toast.style.height = '0px';
+            toast.style.padding = '0px';
+            toast.style.marginTop = '0px';
+            toast.style.border = 'none';
+            toast.style.overflow = 'hidden';
+            
+            setTimeout(() => {
+                toast.remove();
+            }, 300);
+        }
+    });
+}
+
+// Automatically detect flash messages rendered in layout on DOMContentLoaded
+document.addEventListener('DOMContentLoaded', () => {
+    const flashMessages = document.querySelectorAll('[data-flash-message]');
+    flashMessages.forEach(el => {
+        const type = el.getAttribute('data-type') || 'success';
+        const message = el.getAttribute('data-message') || '';
+        if (message) {
+            window.showToast({ type, message });
+        }
+    });
+});
+
+// Intercept form submissions for adding to cart
+document.addEventListener('submit', async (e) => {
+    const form = e.target.closest('[data-cart-form]');
+    if (!form) return;
+
+    // Prevent normal submit
+    e.preventDefault();
+
+    const submitBtn = form.querySelector('[type="submit"]');
+    if (submitBtn) {
+        submitBtn.disabled = true;
+        submitBtn.style.opacity = '0.7';
+    }
+
+    try {
+        const formData = new FormData(form);
+        const actionUrl = form.getAttribute('action');
+
+        const response = await fetch(actionUrl, {
+            method: 'POST',
+            body: formData,
+            headers: {
+                'X-Requested-With': 'XMLHttpRequest',
+                'Accept': 'application/json'
+            }
+        });
+
+        const data = await response.json();
+
+        if (response.ok && data.success) {
+            // Update the cart count badge
+            const badge = document.getElementById('cart-count-badge');
+            if (badge) {
+                badge.textContent = data.cart_count;
+                // Trigger pulse animation
+                badge.classList.remove('badge-pulse');
+                void badge.offsetWidth; // Trigger reflow
+                badge.classList.add('badge-pulse');
+            }
+
+            // Show Toast
+            window.showToast({
+                type: 'success',
+                title: 'Đã thêm vào giỏ hàng!',
+                message: data.message,
+                product: data.product
+            });
+        } else {
+            window.showToast({
+                type: 'error',
+                title: 'Thêm thất bại',
+                message: data.message || 'Có lỗi xảy ra, vui lòng thử lại sau.'
+            });
+        }
+    } catch (err) {
+        console.error('Add to cart error:', err);
+        window.showToast({
+            type: 'error',
+            title: 'Lỗi kết nối',
+            message: 'Không thể kết nối đến máy chủ. Vui lòng kiểm tra lại mạng.'
+        });
+    } finally {
+        if (submitBtn) {
+            submitBtn.disabled = false;
+            submitBtn.style.opacity = '';
+        }
+    }
+});
+
+// ==========================================
+// CART PAGE AUTO-UPDATE & INTERACTIVE LOGIC
+// ==========================================
+
+// Helper to get CSRF token
+const getCsrfToken = () => {
+    const meta = document.querySelector('meta[name="csrf-token"]');
+    return meta ? meta.getAttribute('content') : '';
+};
+
+// Update picker button disabled states
+const updatePickerButtonsState = (lineId, quantity) => {
+    const minusBtn = document.querySelector(`[data-qty-btn="minus"][data-line-id="${lineId}"]`);
+    const plusBtn = document.querySelector(`[data-qty-btn="plus"][data-line-id="${lineId}"]`);
+    
+    if (minusBtn) {
+        if (quantity <= 1) {
+            minusBtn.disabled = true;
+            minusBtn.style.opacity = '0.3';
+            minusBtn.style.cursor = 'not-allowed';
+        } else {
+            minusBtn.disabled = false;
+            minusBtn.style.opacity = '';
+            minusBtn.style.cursor = '';
+        }
+    }
+    
+    if (plusBtn) {
+        if (quantity >= 99) {
+            plusBtn.disabled = true;
+            plusBtn.style.opacity = '0.3';
+            plusBtn.style.cursor = 'not-allowed';
+        } else {
+            plusBtn.disabled = false;
+            plusBtn.style.opacity = '';
+            plusBtn.style.cursor = '';
+        }
+    }
+};
+
+// Initial run to set button states on page load
+document.addEventListener('DOMContentLoaded', () => {
+    const inputs = document.querySelectorAll('[data-qty-input]');
+    inputs.forEach(input => {
+        const lineId = input.getAttribute('data-qty-input');
+        const quantity = parseInt(input.value) || 1;
+        updatePickerButtonsState(lineId, quantity);
+    });
+});
+
+// Update cart quantity via AJAX
+const updateCartQuantity = async (lineId, newQuantity) => {
+    const input = document.querySelector(`[data-qty-input="${lineId}"]`);
+    const article = document.querySelector(`[data-cart-item="${lineId}"]`);
+    
+    if (!input || !article) return;
+
+    // Show row loading state
+    article.style.opacity = '0.6';
+    updatePickerButtonsState(lineId, newQuantity);
+
+    try {
+        const response = await fetch(`/gio-hang/${lineId}`, {
+            method: 'PATCH',
+            headers: {
+                'X-Requested-With': 'XMLHttpRequest',
+                'Accept': 'application/json',
+                'Content-Type': 'application/json',
+                'X-CSRF-TOKEN': getCsrfToken()
+            },
+            body: JSON.stringify({ quantity: newQuantity })
+        });
+
+        const data = await response.json();
+
+        if (response.ok && data.success) {
+            // Update quantity input
+            input.value = data.item_quantity;
+            
+            // Update row item subtotal with flash effect
+            const itemSubtotalEl = document.querySelector(`[data-item-subtotal="${lineId}"]`);
+            if (itemSubtotalEl) {
+                itemSubtotalEl.textContent = data.formatted_item_subtotal;
+                itemSubtotalEl.classList.remove('price-updated-flash');
+                void itemSubtotalEl.offsetWidth; // trigger reflow
+                itemSubtotalEl.classList.add('price-updated-flash');
+            }
+
+            // Update cart subtotal & summaries
+            const subtotalEl = document.getElementById('cart-subtotal');
+            if (subtotalEl) {
+                subtotalEl.textContent = data.formatted_cart_subtotal;
+                subtotalEl.classList.remove('price-updated-flash');
+                void subtotalEl.offsetWidth;
+                subtotalEl.classList.add('price-updated-flash');
+            }
+
+            // Update cart counts
+            const totalCountEl = document.getElementById('cart-total-count');
+            if (totalCountEl) totalCountEl.textContent = data.cart_count;
+
+            const summaryCountEl = document.getElementById('cart-summary-count');
+            if (summaryCountEl) summaryCountEl.textContent = data.cart_count;
+
+            const badge = document.getElementById('cart-count-badge');
+            if (badge) {
+                badge.textContent = data.cart_count;
+                badge.classList.remove('badge-pulse');
+                void badge.offsetWidth;
+                badge.classList.add('badge-pulse');
+            }
+
+            // Update button disabled states
+            updatePickerButtonsState(lineId, data.item_quantity);
+
+        } else {
+            // Revert changes on failure
+            window.showToast({
+                type: 'error',
+                title: 'Cập nhật thất bại',
+                message: data.message || 'Không thể cập nhật số lượng.'
+            });
+        }
+    } catch (err) {
+        console.error('Update quantity error:', err);
+        window.showToast({
+            type: 'error',
+            title: 'Lỗi kết nối',
+            message: 'Không thể kết nối đến máy chủ.'
+        });
+    } finally {
+        article.style.opacity = '';
+    }
+};
+
+// Delete cart item via AJAX
+const deleteCartItem = async (lineId) => {
+    const article = document.querySelector(`[data-cart-item="${lineId}"]`);
+    if (!article) return;
+
+    if (!confirm('Bạn có chắc chắn muốn xóa sản phẩm này khỏi giỏ hàng?')) {
+        return;
+    }
+
+    article.style.opacity = '0.5';
+
+    try {
+        const response = await fetch(`/gio-hang/${lineId}`, {
+            method: 'DELETE',
+            headers: {
+                'X-Requested-With': 'XMLHttpRequest',
+                'Accept': 'application/json',
+                'X-CSRF-TOKEN': getCsrfToken()
+            }
+        });
+
+        const data = await response.json();
+
+        if (response.ok && data.success) {
+            // Trigger beautiful fade-out and slide animation
+            article.classList.add('cart-item-fade-out');
+            
+            setTimeout(() => {
+                article.remove();
+                
+                // Update cart subtotal & summaries
+                const subtotalEl = document.getElementById('cart-subtotal');
+                if (subtotalEl) subtotalEl.textContent = data.formatted_cart_subtotal;
+
+                const totalCountEl = document.getElementById('cart-total-count');
+                if (totalCountEl) totalCountEl.textContent = data.cart_count;
+
+                const summaryCountEl = document.getElementById('cart-summary-count');
+                if (summaryCountEl) summaryCountEl.textContent = data.cart_count;
+
+                const badge = document.getElementById('cart-count-badge');
+                if (badge) {
+                    badge.textContent = data.cart_count;
+                    badge.classList.remove('badge-pulse');
+                    void badge.offsetWidth;
+                    badge.classList.add('badge-pulse');
+                }
+
+                // If cart is empty, show empty state
+                if (data.cart_count === 0) {
+                    const contentWrapper = document.getElementById('cart-content-wrapper');
+                    const emptyState = document.getElementById('cart-empty-state');
+                    if (contentWrapper) contentWrapper.classList.add('hidden');
+                    if (emptyState) emptyState.classList.remove('hidden');
+                }
+            }, 450);
+
+            window.showToast({
+                type: 'success',
+                title: 'Đã xóa sản phẩm',
+                message: 'Sản phẩm đã được xóa khỏi giỏ hàng thành công.'
+            });
+
+        } else {
+            article.style.opacity = '';
+            window.showToast({
+                type: 'error',
+                title: 'Xóa thất bại',
+                message: data.message || 'Không thể xóa sản phẩm.'
+            });
+        }
+    } catch (err) {
+        console.error('Delete item error:', err);
+        article.style.opacity = '';
+        window.showToast({
+            type: 'error',
+            title: 'Lỗi kết nối',
+            message: 'Không thể kết nối đến máy chủ.'
+        });
+    }
+};
+
+// Event delegation for Quantity Picker and Delete Buttons
+document.addEventListener('click', (e) => {
+    // Quantity Picker: Plus Button
+    const plusBtn = e.target.closest('[data-qty-btn="plus"]');
+    if (plusBtn) {
+        const lineId = plusBtn.getAttribute('data-line-id');
+        const input = document.querySelector(`[data-qty-input="${lineId}"]`);
+        if (input) {
+            const currentVal = parseInt(input.value) || 1;
+            if (currentVal < 99) {
+                updateCartQuantity(lineId, currentVal + 1);
+            }
+        }
+        return;
+    }
+
+    // Quantity Picker: Minus Button
+    const minusBtn = e.target.closest('[data-qty-btn="minus"]');
+    if (minusBtn) {
+        const lineId = minusBtn.getAttribute('data-line-id');
+        const input = document.querySelector(`[data-qty-input="${lineId}"]`);
+        if (input) {
+            const currentVal = parseInt(input.value) || 1;
+            if (currentVal > 1) {
+                updateCartQuantity(lineId, currentVal - 1);
+            }
+        }
+        return;
+    }
+
+    // Cart Row Delete Button
+    const deleteBtn = e.target.closest('[data-cart-delete-btn]');
+    if (deleteBtn) {
+        const lineId = deleteBtn.getAttribute('data-cart-delete-btn');
+        deleteCartItem(lineId);
+    }
+});

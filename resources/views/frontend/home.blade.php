@@ -3,7 +3,7 @@
         <main class="homepage">
             <section class="container hero-layout">
                 <aside class="category-panel">
-                    <h2>Danh muc noi bat</h2>
+                    <h2>Danh mục nổi bật</h2>
                     <ul>
                         @foreach ($navCategories as $category)
                             <li>
@@ -34,13 +34,13 @@
 
                                     <div class="hero-slide__visual">
                                         <div class="hero-stat">
-                                            <span>Uu dai</span>
+                                            <span>Ưu đãi</span>
                                             <strong>{{ $slide['highlight'] }}</strong>
                                         </div>
                                         <div class="hero-device-card">
                                             <span>StoreDP Selection</span>
-                                            <strong>San pham cong nghe chon loc</strong>
-                                            <p>Bo cuc mo phong sat UX cua trang ban le cong nghe quy mo lon.</p>
+                                            <strong>Sản phẩm công nghệ chọn lọc</strong>
+                                            <p>Bố cục mô phỏng sát UX của trang bán lẻ công nghệ quy mô lớn.</p>
                                         </div>
                                     </div>
                                 </article>
@@ -53,7 +53,7 @@
                                     type="button"
                                     class="hero-slider__dot{{ $loop->first ? ' is-active' : '' }}"
                                     data-slide-dot
-                                    aria-label="Chuyen slide {{ $loop->iteration }}"
+                                    aria-label="Chuyển slide {{ $loop->iteration }}"
                                 ></button>
                             @endforeach
                         </div>
@@ -61,12 +61,12 @@
 
                     <div class="mini-banners">
                         <article class="mini-banner mini-banner--gold">
-                            <span>Tra gop 0%</span>
-                            <strong>Mua truoc, thanh toan linh hoat</strong>
+                            <span>Trả góp 0%</span>
+                            <strong>Mua trước, thanh toán linh hoạt</strong>
                         </article>
                         <article class="mini-banner mini-banner--blue">
-                            <span>Thu cu doi moi</span>
-                            <strong>Len doi nhanh, tro gia minh bach</strong>
+                            <span>Thu cũ đổi mới</span>
+                            <strong>Lên đời nhanh, trợ giá minh bạch</strong>
                         </article>
                     </div>
                 </div>
@@ -84,8 +84,8 @@
             <section class="container section-block">
                 <div class="section-heading">
                     <div>
-                        <p class="section-kicker">Danh muc nhanh</p>
-                        <h2>Nhom san pham duoc quan tam nhieu nhat</h2>
+                        <p class="section-kicker">Danh mục nhanh</p>
+                        <h2>Nhóm sản phẩm được quan tâm nhiều nhất</h2>
                     </div>
                 </div>
 
@@ -103,10 +103,10 @@
             <section class="container section-block promotions-block">
                 <div class="section-heading">
                     <div>
-                        <p class="section-kicker">Khuyen mai</p>
-                        <h2>Uu dai lon dang chay tren trang chu</h2>
+                        <p class="section-kicker">Khuyến mãi</p>
+                        <h2>Ưu đãi lớn đang chạy trên trang chủ</h2>
                     </div>
-                    <a href="#" class="section-link">Xem tat ca</a>
+                    <a href="#" class="section-link">Xem tất cả</a>
                 </div>
 
                 <div class="promotion-grid">
@@ -115,7 +115,7 @@
                             <span class="promotion-card__date">{{ $promotion['date'] }}</span>
                             <h3>{{ $promotion['title'] }}</h3>
                             <p>{{ $promotion['subtitle'] }}</p>
-                            <a href="#">Nhan uu dai ngay</a>
+                            <a href="#">Nhận ưu đãi ngay</a>
                         </article>
                     @endforeach
                 </div>
@@ -129,7 +129,7 @@
                             <h2>{{ $section['title'] }}</h2>
                             <p class="section-description">{{ $section['subtitle'] }}</p>
                         </div>
-                        <a href="#" class="section-link">Xem them</a>
+                        <a href="#" class="section-link">Xem thêm</a>
                     </div>
 
                     <div class="product-grid">

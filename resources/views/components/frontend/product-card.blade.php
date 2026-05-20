@@ -84,7 +84,7 @@
             <a href="{{ route('products.show', $product['slug']) }}" class="inline-flex items-center justify-center rounded-lg border border-gray-200 bg-white px-3 py-2 text-[11px] font-semibold text-gray-700 hover:border-orange-300 hover:text-orange-600 transition">
                 Xem chi tiet
             </a>
-            <form action="{{ route('cart.store') }}" method="post">
+            <form action="{{ route('cart.store') }}" method="post" data-cart-form>
                 @csrf
                 <input type="hidden" name="slug" value="{{ $product['slug'] }}">
                 <input type="hidden" name="quantity" value="1">
