@@ -10,6 +10,7 @@ class CartManager
 {
     private const COOKIE_NAME = 'storedp_cart';
     private const COOKIE_MINUTES = 43200;
+    private ?array $itemsCache = null;
 
     public function __construct(
         private readonly Request $request,
@@ -19,14 +20,18 @@ class CartManager
 
     public function items(): array
     {
+        if ($this->itemsCache !== null) {
+            return $this->itemsCache;
+        }
+
         $payload = $this->request->cookie(self::COOKIE_NAME, '[]');
         $items = json_decode($payload, true);
 
         if (! is_array($items)) {
-            return [];
+            return $this->itemsCache = [];
         }
 
-        return array_values(array_map(function (array $item): array {
+        return $this->itemsCache = array_values(array_map(function (array $item): array {
             if ((int) ($item['price_value'] ?? 0) <= 0 && ! empty($item['price'])) {
                 $item['price_value'] = $this->parsePriceValue($item['price']);
             }
@@ -63,6 +68,8 @@ class CartManager
             $items[] = $item;
         }
 
+        $this->itemsCache = array_values($items);
+
         return $this->cookie($items);
     }
 
@@ -78,10 +85,14 @@ class CartManager
         if ($quantity <= 0) {
             unset($items[$index]);
 
-            return $this->cookie(array_values($items));
+            $items = array_values($items);
+            $this->itemsCache = $items;
+
+            return $this->cookie($items);
         }
 
         $items[$index]['quantity'] = $quantity;
+        $this->itemsCache = array_values($items);
 
         return $this->cookie($items);
     }
@@ -93,11 +104,15 @@ class CartManager
             fn (array $item) => $item['line_id'] !== $lineId
         ));
 
+        $this->itemsCache = $items;
+
         return $this->cookie($items);
     }
 
     public function clear(): Cookie
     {
+        $this->itemsCache = [];
+
         return $this->cookie([]);
     }
 

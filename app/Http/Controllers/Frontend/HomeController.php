@@ -12,6 +12,7 @@ class HomeController extends Controller
     {
         return view('frontend.home', [
             'featuredCategories' => $catalog->featuredCategories(),
+            'homeBanners' => $catalog->homeBanners(),
             'heroSlides' => $catalog->heroSlides(),
             'navCategories' => $catalog->navCategories(),
             'productSections' => $catalog->productSections(),

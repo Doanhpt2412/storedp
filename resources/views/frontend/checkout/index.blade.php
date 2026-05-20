@@ -99,12 +99,12 @@
                         <a href="{{ route('cart.index') }}" class="text-sm font-semibold text-blue-600 hover:text-blue-700">Sửa giỏ hàng</a>
                     </h2>
 
-                    <div class="space-y-4 mb-6 max-h-[350px] overflow-y-auto pr-2 custom-scrollbar">
+                    <div class="space-y-4 mb-6 max-h-[350px] overflow-y-auto pr-2 pt-2 custom-scrollbar">
                         @foreach ($cartItems as $item)
                             <div class="flex gap-3 items-start">
                                 <div class="w-16 h-16 rounded-lg border border-gray-100 bg-gray-50 flex items-center justify-center p-1 relative shrink-0">
                                     <img src="{{ $item['image'] }}" alt="{{ $item['name'] }}" class="max-w-full max-h-full object-contain">
-                                    <span class="absolute -top-2 -right-2 w-5 h-5 bg-gray-500 text-white rounded-full flex items-center justify-center text-[10px] font-bold border-2 border-white shadow-sm">{{ $item['quantity'] }}</span>
+                                    <span class="absolute -top-1 -right-1 min-w-6 h-6 px-1.5 bg-orange-500 text-white rounded-full flex items-center justify-center text-[11px] font-bold border-2 border-white shadow-sm leading-none">{{ $item['quantity'] }}</span>
                                 </div>
                                 <div class="flex-1 min-w-0">
                                     <h4 class="text-sm font-bold text-gray-900 line-clamp-2 leading-snug">{{ $item['name'] }}</h4>

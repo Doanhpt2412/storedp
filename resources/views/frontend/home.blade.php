@@ -20,28 +20,42 @@
                     <div class="hero-slider" data-slider>
                         <div class="hero-slider__track">
                             @foreach ($heroSlides as $slide)
-                                <article class="hero-slide{{ $loop->first ? ' is-active' : '' }}" data-slide>
+                                <article
+                                    class="hero-slide{{ $loop->first ? ' is-active' : '' }}"
+                                    data-slide
+                                    @if (!empty($slide['image_url']))
+                                        style="background-image: url('{{ $slide['image_url'] }}')"
+                                    @endif
+                                >
                                     <div class="hero-slide__content">
-                                        <p class="hero-slide__eyebrow">{{ $slide['eyebrow'] }}</p>
-                                        <h1>{{ $slide['title'] }}</h1>
-                                        <p>{{ $slide['description'] }}</p>
+                                        <p class="hero-slide__eyebrow">{{ $slide['eyebrow'] ?? '' }}</p>
+                                        <h1>{{ $slide['title'] ?? '' }}</h1>
+                                        <p>{{ $slide['description'] ?? '' }}</p>
 
                                         <div class="hero-slide__actions">
-                                            <a href="#" class="button-primary">{{ $slide['primary_cta'] }}</a>
-                                            <a href="#" class="button-secondary">{{ $slide['secondary_cta'] }}</a>
+                                            @if (filled($slide['primary_label'] ?? null) && filled($slide['primary_url'] ?? null))
+                                                <a href="{{ $slide['primary_url'] }}" class="button-primary">{{ $slide['primary_label'] }}</a>
+                                            @endif
+
+                                            @if (filled($slide['secondary_label'] ?? null) && filled($slide['secondary_url'] ?? null))
+                                                <a href="{{ $slide['secondary_url'] }}" class="button-secondary">{{ $slide['secondary_label'] }}</a>
+                                            @endif
                                         </div>
                                     </div>
 
                                     <div class="hero-slide__visual">
+                                        @if ($slide['highlight_label'])
                                         <div class="hero-stat">
-                                            <span>Ưu đãi</span>
-                                            <strong>{{ $slide['highlight'] }}</strong>
+                                            <span>{{ $slide['highlight_label'] ?? 'Ưu đãi nổi bật' }}</span>
+                                            <strong>{{ $slide['highlight_text'] ?? '' }}</strong>
                                         </div>
+                                        @endif
+                                        @if ($slide['card_title'])
                                         <div class="hero-device-card">
-                                            <span>StoreDP Selection</span>
-                                            <strong>Sản phẩm công nghệ chọn lọc</strong>
-                                            <p>Bố cục mô phỏng sát UX của trang bán lẻ công nghệ quy mô lớn.</p>
+                                            <strong>{{ $slide['card_title'] ?? 'Cụm sản phẩm nổi bật' }}</strong>
+                                            <p>{{ $slide['card_text'] ?? '' }}</p>
                                         </div>
+                                        @endif
                                     </div>
                                 </article>
                             @endforeach
@@ -60,14 +74,18 @@
                     </div>
 
                     <div class="mini-banners">
-                        <article class="mini-banner mini-banner--gold">
-                            <span>Trả góp 0%</span>
-                            <strong>Mua trước, thanh toán linh hoạt</strong>
-                        </article>
-                        <article class="mini-banner mini-banner--blue">
-                            <span>Thu cũ đổi mới</span>
-                            <strong>Lên đời nhanh, trợ giá minh bạch</strong>
-                        </article>
+                        @foreach ($homeBanners as $banner)
+                            <a
+                                href="{{ $banner['url'] ?? '#' }}"
+                                class="mini-banner{{ $loop->odd ? ' mini-banner--gold' : ' mini-banner--blue' }}"
+                                @if (!empty($banner['image_url']))
+                                    style="background-image: url('{{ $banner['image_url'] }}')"
+                                @endif
+                            >
+                                <span>{{ $banner['eyebrow'] ?? '' }}</span>
+                                <strong>{{ $banner['title'] ?? '' }}</strong>
+                            </a>
+                        @endforeach
                     </div>
                 </div>
             </section>
@@ -100,27 +118,6 @@
                 </div>
             </section>
 
-            <section class="container section-block promotions-block">
-                <div class="section-heading">
-                    <div>
-                        <p class="section-kicker">Khuyến mãi</p>
-                        <h2>Ưu đãi lớn đang chạy trên trang chủ</h2>
-                    </div>
-                    <a href="#" class="section-link">Xem tất cả</a>
-                </div>
-
-                <div class="promotion-grid">
-                    @foreach ($promotions as $promotion)
-                        <article class="promotion-card">
-                            <span class="promotion-card__date">{{ $promotion['date'] }}</span>
-                            <h3>{{ $promotion['title'] }}</h3>
-                            <p>{{ $promotion['subtitle'] }}</p>
-                            <a href="#">Nhận ưu đãi ngay</a>
-                        </article>
-                    @endforeach
-                </div>
-            </section>
-
             @foreach ($productSections as $section)
                 <section class="container section-block product-showcase">
                     <div class="section-heading">
@@ -129,7 +126,7 @@
                             <h2>{{ $section['title'] }}</h2>
                             <p class="section-description">{{ $section['subtitle'] }}</p>
                         </div>
-                        <a href="#" class="section-link">Xem thêm</a>
+                        <a href="#" class="section-link">Xem them</a>
                     </div>
 
                     <div class="product-grid">

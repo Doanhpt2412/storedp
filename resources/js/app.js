@@ -3,55 +3,153 @@ document.documentElement.classList.add('js-ready');
 const slider = document.querySelector('[data-slider]');
 
 if (slider) {
-    const slides = slider.querySelectorAll('[data-slide]');
-    const dots = slider.querySelectorAll('[data-slide-dot]');
+    const slides = Array.from(slider.querySelectorAll('[data-slide]'));
+    const dots = Array.from(slider.querySelectorAll('[data-slide-dot]'));
     let activeIndex = 0;
+    let autoRotateTimer = null;
 
     const setActiveSlide = (index) => {
+        if (!slides.length) {
+            return;
+        }
+
+        const nextIndex = (index + slides.length) % slides.length;
+
         slides.forEach((slide, slideIndex) => {
-            slide.classList.toggle('is-active', slideIndex === index);
+            slide.classList.toggle('is-active', slideIndex === nextIndex);
         });
 
         dots.forEach((dot, dotIndex) => {
-            dot.classList.toggle('is-active', dotIndex === index);
+            dot.classList.toggle('is-active', dotIndex === nextIndex);
         });
 
-        activeIndex = index;
+        activeIndex = nextIndex;
+    };
+
+    const stopAutoRotate = () => {
+        if (autoRotateTimer) {
+            window.clearInterval(autoRotateTimer);
+            autoRotateTimer = null;
+        }
+    };
+
+    const startAutoRotate = () => {
+        if (slides.length < 2 || autoRotateTimer) {
+            return;
+        }
+
+        autoRotateTimer = window.setInterval(() => {
+            setActiveSlide(activeIndex + 1);
+        }, 5600);
     };
 
     dots.forEach((dot, index) => {
         dot.addEventListener('click', () => {
             setActiveSlide(index);
+            stopAutoRotate();
+            startAutoRotate();
         });
     });
 
-    window.setInterval(() => {
-        const nextIndex = (activeIndex + 1) % slides.length;
-        setActiveSlide(nextIndex);
-    }, 5000);
+    slider.addEventListener('mouseenter', stopAutoRotate);
+    slider.addEventListener('mouseleave', startAutoRotate);
+    slider.addEventListener('focusin', stopAutoRotate);
+    slider.addEventListener('focusout', startAutoRotate);
+
+    setActiveSlide(0);
+    startAutoRotate();
 }
 
-const galleryMain = document.querySelector('[data-gallery-main]');
-const galleryThumbs = document.querySelectorAll('[data-gallery-thumb]');
+const productGallery = document.querySelector('[data-product-gallery]');
 
-if (galleryMain && galleryThumbs.length > 0) {
-    galleryThumbs.forEach((thumb) => {
+if (productGallery) {
+    const slides = Array.from(productGallery.querySelectorAll('[data-gallery-slide]'));
+    const thumbs = Array.from(productGallery.querySelectorAll('[data-gallery-thumb]'));
+    const thumbsTrack = productGallery.querySelector('[data-gallery-thumbs]');
+    const prevButton = productGallery.querySelector('[data-gallery-prev]');
+    const nextButton = productGallery.querySelector('[data-gallery-next]');
+    const thumbPrevButton = productGallery.querySelector('[data-gallery-thumb-prev]');
+    const thumbNextButton = productGallery.querySelector('[data-gallery-thumb-next]');
+    let activeIndex = thumbs.findIndex((thumb) => thumb.classList.contains('is-active'));
+    let thumbStartIndex = 0;
+
+    if (activeIndex < 0) {
+        activeIndex = 0;
+    }
+
+    const maxThumbsPerView = 4;
+
+    const syncThumbViewport = () => {
+        if (!thumbsTrack) {
+            return;
+        }
+
+        const maxStart = Math.max(thumbs.length - maxThumbsPerView, 0);
+        thumbStartIndex = Math.min(Math.max(thumbStartIndex, 0), maxStart);
+        const firstThumb = thumbs[0];
+
+        if (!firstThumb) {
+            return;
+        }
+
+        const thumbWidth = firstThumb.getBoundingClientRect().width;
+        const trackGap = 14;
+        const offset = (thumbWidth + trackGap) * thumbStartIndex;
+        thumbsTrack.style.transform = `translateX(-${offset}px)`;
+
+        thumbPrevButton?.classList.toggle('is-disabled', thumbStartIndex === 0);
+        thumbNextButton?.classList.toggle('is-disabled', thumbStartIndex >= maxStart);
+    };
+
+    const ensureThumbVisible = (index) => {
+        if (index < thumbStartIndex) {
+            thumbStartIndex = index;
+        } else if (index >= thumbStartIndex + maxThumbsPerView) {
+            thumbStartIndex = index - maxThumbsPerView + 1;
+        }
+
+        syncThumbViewport();
+    };
+
+    const setActiveSlide = (index) => {
+        if (!slides.length || !thumbs.length) {
+            return;
+        }
+
+        activeIndex = (index + slides.length) % slides.length;
+
+        slides.forEach((slide, slideIndex) => {
+            slide.classList.toggle('is-active', slideIndex === activeIndex);
+        });
+
+        thumbs.forEach((thumb, thumbIndex) => {
+            thumb.classList.toggle('is-active', thumbIndex === activeIndex);
+        });
+
+        ensureThumbVisible(activeIndex);
+    };
+
+    prevButton?.addEventListener('click', () => setActiveSlide(activeIndex - 1));
+    nextButton?.addEventListener('click', () => setActiveSlide(activeIndex + 1));
+
+    thumbPrevButton?.addEventListener('click', () => {
+        thumbStartIndex -= 1;
+        syncThumbViewport();
+    });
+
+    thumbNextButton?.addEventListener('click', () => {
+        thumbStartIndex += 1;
+        syncThumbViewport();
+    });
+
+    thumbs.forEach((thumb, index) => {
         thumb.addEventListener('click', () => {
-            const nextImage = thumb.getAttribute('data-image');
-
-            if (!nextImage) {
-                return;
-            }
-
-            galleryMain.setAttribute('src', nextImage);
-
-            galleryThumbs.forEach((item) => {
-                item.classList.remove('is-active');
-            });
-
-            thumb.classList.add('is-active');
+            setActiveSlide(index);
         });
     });
+
+    window.addEventListener('resize', syncThumbViewport);
+    setActiveSlide(activeIndex);
 }
 
 const variantPickers = document.querySelectorAll('[data-variant-picker]');
@@ -207,6 +305,21 @@ modalCloses.forEach(btn => {
         }
     });
 });
+
+const descriptionShell = document.querySelector('[data-description-shell]');
+const descriptionToggle = document.querySelector('[data-description-toggle]');
+
+if (descriptionShell && descriptionToggle) {
+    const expandLabel = descriptionToggle.querySelector('[data-expand-label]');
+    const collapseLabel = descriptionToggle.querySelector('[data-collapse-label]');
+
+    descriptionToggle.addEventListener('click', () => {
+        const isExpanded = descriptionShell.classList.toggle('is-expanded');
+
+        expandLabel?.classList.toggle('hidden', isExpanded);
+        collapseLabel?.classList.toggle('hidden', !isExpanded);
+    });
+}
 
 // ==========================================
 // TOAST SYSTEM & AJAX CART FUNCTIONALITY
@@ -447,7 +560,7 @@ document.addEventListener('DOMContentLoaded', () => {
 });
 
 // Update cart quantity via AJAX
-const updateCartQuantity = async (lineId, newQuantity) => {
+const legacyUpdateCartQuantity = async (lineId, newQuantity) => {
     const input = document.querySelector(`[data-qty-input="${lineId}"]`);
     const article = document.querySelector(`[data-cart-item="${lineId}"]`);
     
@@ -528,6 +641,134 @@ const updateCartQuantity = async (lineId, newQuantity) => {
         });
     } finally {
         article.style.opacity = '';
+    }
+};
+
+const cartQuantityState = new Map();
+
+const getCartQuantityState = (lineId) => {
+    if (!cartQuantityState.has(lineId)) {
+        const input = document.querySelector(`[data-qty-input="${lineId}"]`);
+        const initialQuantity = parseInt(input?.value || '1', 10) || 1;
+
+        cartQuantityState.set(lineId, {
+            serverQuantity: initialQuantity,
+            desiredQuantity: initialQuantity,
+            inFlight: false,
+        });
+    }
+
+    return cartQuantityState.get(lineId);
+};
+
+const syncCartSummaryUi = (data) => {
+    const subtotalEl = document.getElementById('cart-subtotal');
+    if (subtotalEl) {
+        subtotalEl.textContent = data.formatted_cart_subtotal;
+        subtotalEl.classList.remove('price-updated-flash');
+        void subtotalEl.offsetWidth;
+        subtotalEl.classList.add('price-updated-flash');
+    }
+
+    const totalCountEl = document.getElementById('cart-total-count');
+    if (totalCountEl) totalCountEl.textContent = data.cart_count;
+
+    const summaryCountEl = document.getElementById('cart-summary-count');
+    if (summaryCountEl) summaryCountEl.textContent = data.cart_count;
+
+    const badge = document.getElementById('cart-count-badge');
+    if (badge) {
+        badge.textContent = data.cart_count;
+        badge.classList.remove('badge-pulse');
+        void badge.offsetWidth;
+        badge.classList.add('badge-pulse');
+    }
+};
+
+const sendCartQuantityUpdate = async (lineId) => {
+    const input = document.querySelector(`[data-qty-input="${lineId}"]`);
+    const article = document.querySelector(`[data-cart-item="${lineId}"]`);
+    const state = getCartQuantityState(lineId);
+
+    if (!input || !article || state.inFlight) return;
+
+    const newQuantity = state.desiredQuantity;
+    state.inFlight = true;
+    article.style.opacity = '0.6';
+    updatePickerButtonsState(lineId, newQuantity);
+
+    try {
+        const response = await fetch(`/gio-hang/${lineId}`, {
+            method: 'PATCH',
+            headers: {
+                'X-Requested-With': 'XMLHttpRequest',
+                'Accept': 'application/json',
+                'Content-Type': 'application/json',
+                'X-CSRF-TOKEN': getCsrfToken()
+            },
+            body: JSON.stringify({ quantity: newQuantity })
+        });
+
+        const data = await response.json();
+
+        if (response.ok && data.success) {
+            state.serverQuantity = data.item_quantity;
+            input.value = data.item_quantity;
+
+            const itemSubtotalEl = document.querySelector(`[data-item-subtotal="${lineId}"]`);
+            if (itemSubtotalEl) {
+                itemSubtotalEl.textContent = data.formatted_item_subtotal;
+                itemSubtotalEl.classList.remove('price-updated-flash');
+                void itemSubtotalEl.offsetWidth;
+                itemSubtotalEl.classList.add('price-updated-flash');
+            }
+
+            syncCartSummaryUi(data);
+            updatePickerButtonsState(lineId, data.item_quantity);
+        } else {
+            state.desiredQuantity = state.serverQuantity;
+            input.value = state.serverQuantity;
+            updatePickerButtonsState(lineId, state.serverQuantity);
+            window.showToast({
+                type: 'error',
+                title: 'Cập nhật thất bại',
+                message: data.message || 'Không thể cập nhật số lượng.'
+            });
+        }
+    } catch (err) {
+        console.error('Update quantity error:', err);
+        state.desiredQuantity = state.serverQuantity;
+        input.value = state.serverQuantity;
+        updatePickerButtonsState(lineId, state.serverQuantity);
+        window.showToast({
+            type: 'error',
+            title: 'Lỗi kết nối',
+            message: 'Không thể kết nối đến máy chủ.'
+        });
+    } finally {
+        state.inFlight = false;
+        article.style.opacity = '';
+
+        if (state.desiredQuantity !== state.serverQuantity) {
+            input.value = state.desiredQuantity;
+            updatePickerButtonsState(lineId, state.desiredQuantity);
+            sendCartQuantityUpdate(lineId);
+        }
+    }
+};
+
+const updateCartQuantity = (lineId, newQuantity) => {
+    const input = document.querySelector(`[data-qty-input="${lineId}"]`);
+    if (!input) return;
+
+    const state = getCartQuantityState(lineId);
+    state.desiredQuantity = Math.min(99, Math.max(1, newQuantity));
+
+    input.value = state.desiredQuantity;
+    updatePickerButtonsState(lineId, state.desiredQuantity);
+
+    if (!state.inFlight) {
+        sendCartQuantityUpdate(lineId);
     }
 };
 

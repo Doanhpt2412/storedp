@@ -12,32 +12,68 @@ class ProductCatalog
 {
     public function heroSlides(): array
     {
-        return [
+        return app(SiteSettings::class)->group('hero_slides', [
             [
-                'eyebrow' => 'Apple Flagship',
-                'title' => 'iPhone 16 Series giam sau, tra gop 0% tai cua hang.',
-                'description' => 'Tap trung vao nhom may cao cap, uu dai thu cu doi moi va qua tang phu kien cho nhu cau len doi nhanh.',
-                'primary_cta' => 'Mua iPhone ngay',
-                'secondary_cta' => 'Xem thu cu doi moi',
-                'highlight' => 'Giao nhanh 2h noi thanh',
+                'eyebrow' => 'Apple cao cấp',
+                'title' => 'iPhone 16 Series giá tốt, lên đời nhanh tại Tech One.',
+                'description' => 'Tập trung vào nhóm máy cao cấp, trợ giá thu cũ đổi mới và quà tặng phụ kiện cho nhu cầu nâng cấp mỗi ngày.',
+                'primary_label' => 'Mua iPhone ngay',
+                'primary_url' => route('search', ['q' => 'iphone 16']),
+                'secondary_label' => 'Xem điện thoại',
+                'secondary_url' => route('categories.show', ['path' => 'dien-thoai']),
+                'highlight_label' => 'Ưu đãi nổi bật',
+                'highlight_text' => 'Giao nhanh 2 giờ nội thành',
+                'card_title' => 'Bộ sưu tập iPhone chính hãng',
+                'card_text' => 'Nhiều phiên bản màu, hỗ trợ trả góp linh hoạt và giao máy nhanh trong ngày.',
+                'image_url' => null,
             ],
             [
                 'eyebrow' => 'Macbook M4',
-                'title' => 'Laptop cho cong viec sang tao, pin ben, mau dep, ton kho san.',
-                'description' => 'Danh cho sinh vien, dan van phong va creator voi cau hinh M4, RAM 16GB va SSD toc do cao.',
-                'primary_cta' => 'Chon Macbook',
-                'secondary_cta' => 'So sanh cac phien ban',
-                'highlight' => 'Tang goi Office va tui chong soc',
+                'title' => 'Laptop cho học tập và sáng tạo với hiệu năng ổn định.',
+                'description' => 'Phù hợp cho sinh viên, dân văn phòng và creator với cấu hình M4, RAM 16GB, SSD tốc độ cao và sẵn hàng.',
+                'primary_label' => 'Chọn MacBook',
+                'primary_url' => route('search', ['q' => 'macbook m4']),
+                'secondary_label' => 'Xem laptop',
+                'secondary_url' => route('categories.show', ['path' => 'laptop']),
+                'highlight_label' => 'Quà tặng thêm',
+                'highlight_text' => 'Tặng túi chống sốc và phần mềm văn phòng',
+                'card_title' => 'MacBook Air và Pro thế hệ mới',
+                'card_text' => 'Thiết kế mỏng nhẹ, pin bền và phù hợp cho cả công việc lẫn giải trí dài giờ.',
+                'image_url' => null,
             ],
             [
-                'eyebrow' => 'Smart Living',
-                'title' => 'Robot hut bui, camera AI va thiet bi nha thong minh dang giam manh.',
-                'description' => 'Mo rong trang chu theo dung nhom san pham hot cua chuoi ban le cong nghe hien dai.',
-                'primary_cta' => 'Kham pha nha thong minh',
-                'secondary_cta' => 'Xem deal hom nay',
-                'highlight' => 'Bao hanh chinh hang toan quoc',
+                'eyebrow' => 'Nhà thông minh',
+                'title' => 'Thiết bị nhà thông minh đang có nhiều ưu đãi để chọn.',
+                'description' => 'Robot hút bụi, camera AI và hệ sinh thái smarthome được gom thành nhóm sản phẩm nổi bật ngay trên trang chủ.',
+                'primary_label' => 'Khám phá smarthome',
+                'primary_url' => route('categories.show', ['path' => 'nha-thong-minh']),
+                'secondary_label' => 'Xem khuyến mãi',
+                'secondary_url' => route('home').'#khuyen-mai',
+                'highlight_label' => 'An tâm sử dụng',
+                'highlight_text' => 'Bảo hành chính hãng toàn quốc',
+                'card_title' => 'Giải pháp gọn cho căn hộ hiện đại',
+                'card_text' => 'Tự vệ sinh, an ninh đến tự động hóa cơ bản, mọi thứ được gom trong một cụm hiển thị dễ hiểu.',
+                'image_url' => null,
             ],
-        ];
+        ]);
+    }
+
+    public function homeBanners(): array
+    {
+        return app(SiteSettings::class)->group('home_banners', [
+            [
+                'eyebrow' => 'Trả góp 0%',
+                'title' => 'Mua trước, thanh toán linh hoạt',
+                'url' => route('checkout.index'),
+                'image_url' => null,
+            ],
+            [
+                'eyebrow' => 'Thu cũ đổi mới',
+                'title' => 'Lên đời nhanh, trợ giá minh bạch',
+                'url' => route('search', ['q' => 'thu cu doi moi']),
+                'image_url' => null,
+            ],
+        ]);
     }
 
     public function featuredCategories(): array
@@ -63,12 +99,12 @@ class ProductCatalog
         }
 
         return [
-            ['name' => 'iPhone', 'slug' => 'iphone', 'icon' => 'IP', 'note' => '17, 16, 15 Series'],
-            ['name' => 'Macbook', 'slug' => 'mac', 'icon' => 'MB', 'note' => 'Air va Pro M4'],
+            ['name' => 'iPhone', 'slug' => 'iphone', 'icon' => 'IP', 'note' => 'Các phiên bản 17, 16, 15'],
+            ['name' => 'Macbook', 'slug' => 'mac', 'icon' => 'MB', 'note' => 'Air và Pro M4'],
             ['name' => 'iPad', 'slug' => 'ipad', 'icon' => 'PD', 'note' => 'Pro, Air, Mini'],
             ['name' => 'Watch', 'slug' => 'watch', 'icon' => 'WT', 'note' => 'Ultra, Series, SE'],
-            ['name' => 'Am thanh', 'slug' => 'am-thanh', 'icon' => 'AU', 'note' => 'AirPods, Loa, Tai nghe'],
-            ['name' => 'Nha thong minh', 'slug' => 'nha-thong-minh', 'icon' => 'SM', 'note' => 'Robot, Camera, TV'],
+            ['name' => 'Âm thanh', 'slug' => 'am-thanh', 'icon' => 'AU', 'note' => 'AirPods, Loa, Tai nghe'],
+            ['name' => 'Nhà thông minh', 'slug' => 'nha-thong-minh', 'icon' => 'SM', 'note' => 'Robot, Camera, TV'],
         ];
     }
 
@@ -93,25 +129,25 @@ class ProductCatalog
             'slug' => \Illuminate\Support\Str::slug($name),
         ], [
             'Apple',
-            'Dien thoai',
-            'May cu',
-            'May tinh bang',
+            'Điện thoại',
+            'Máy cũ',
+            'Máy tính bảng',
             'Mac',
-            'Dong ho thong minh',
-            'Nha thong minh',
-            'Phu kien',
-            'Am thanh',
-            'Khuyen mai',
+            'Đồng hồ thông minh',
+            'Nhà thông minh',
+            'Phụ kiện',
+            'Âm thanh',
+            'Khuyến mãi',
         ]);
     }
 
     public function serviceHighlights(): array
     {
         return [
-            'Thu cu doi moi tro gia toi 3.000.000d',
-            'Tra gop 0% cho san pham gia tri cao',
-            'Bao hanh minh bach, ho tro ky thuat nhanh',
-            'Giao hang noi thanh trong ngay',
+            'Thu cũ đổi mới trợ giá tới 3.000.000đ',
+            'Trả góp 0% cho sản phẩm giá trị cao',
+            'Bảo hành minh bạch, hỗ trợ kỹ thuật nhanh',
+            'Giao hàng nội thành trong ngày',
         ];
     }
 
@@ -119,19 +155,19 @@ class ProductCatalog
     {
         return [
             [
-                'title' => 'Thu cu doi moi len doi MacBook',
-                'subtitle' => 'Tro gia den 3.000.000d cho dong M4 moi',
+                'title' => 'Thu cũ đổi mới lên đời MacBook',
+                'subtitle' => 'Trợ giá đến 3.000.000đ cho dòng M4 mới',
                 'date' => '01/05/2026 - 30/06/2026',
             ],
             [
-                'title' => 'Tra gop 0% cho iPhone va iPad',
-                'subtitle' => 'Duyet nhanh, thu tuc gon, uu dai phu kien di kem',
-                'date' => 'Ap dung moi ngay',
+                'title' => 'Trả góp 0% cho iPhone và iPad',
+                'subtitle' => 'Duyệt nhanh, thủ tục gọn, ưu đãi phụ kiện đi kèm',
+                'date' => 'Áp dụng mỗi ngày',
             ],
             [
-                'title' => 'Mua combo nha thong minh',
-                'subtitle' => 'Tiet kiem them den 15% cho robot + camera AI',
-                'date' => 'So luong co han',
+                'title' => 'Mua combo nhà thông minh',
+                'subtitle' => 'Tiết kiệm thêm đến 15% cho robot + camera AI',
+                'date' => 'Số lượng có hạn',
             ],
         ];
     }
@@ -148,8 +184,8 @@ class ProductCatalog
             return [
                 [
                     'title' => 'Sản phẩm mới cập nhật',
-                    'subtitle' => 'Dữ liệu đang được lấy trực tiếp từ module quản lý sản phẩm.',
-                    'badge' => 'Database',
+                    'subtitle' => '',
+                    'badge' => 'Sản phẩm',
                     'products' => $products->map(fn (Product $product) => $this->dbProductCard($product))->all(),
                 ],
             ];
@@ -157,9 +193,9 @@ class ProductCatalog
 
         return [
             [
-                'title' => 'Dien thoai noi bat',
-                'subtitle' => 'Cac model dang duoc tim kiem va dat mua nhieu nhat.',
-                'badge' => 'Hot trend',
+                'title' => 'Nhóm sản phẩm được quan tâm nhiều nhất',
+                'subtitle' => 'Các model đang được tìm kiếm và đặt mua nhiều nhất.',
+                'badge' => 'Xu hướng',
                 'products' => [
                     $this->productCard('iphone-16-pro-max-256gb'),
                     $this->productCard('samsung-galaxy-s25-ultra-512gb'),
@@ -168,9 +204,9 @@ class ProductCatalog
                 ],
             ],
             [
-                'title' => 'Macbook ban chay',
-                'subtitle' => 'Danh cho hoc tap, van phong va san xuat noi dung.',
-                'badge' => 'Best seller',
+                'title' => 'Macbook bán chạy',
+                'subtitle' => 'Dành cho học tập, văn phòng và sản xuất nội dung.',
+                'badge' => 'Bán chạy',
                 'products' => [
                     $this->productCard('macbook-air-m4-13-16gb-256gb'),
                     $this->productCard('macbook-pro-m4-14-16gb-512gb'),
@@ -187,7 +223,7 @@ class ProductCatalog
             'iphone-16-pro-max-256gb' => [
                 'slug' => 'iphone-16-pro-max-256gb',
                 'name' => 'iPhone 16 Pro Max 256GB',
-                'category' => 'Dien thoai',
+                'category' => 'Điện thoại',
                 'brand' => 'Apple',
                 'sku' => 'APL-IP16PM-256-NAT',
                 'storage' => '256GB',
@@ -198,7 +234,7 @@ class ProductCatalog
                 'reviews_count' => 128,
                 'tag' => 'Moi 100%',
                 'color' => 'Titan Tu Nhien',
-                'status' => 'Con hang tai 7 cua hang',
+                'status' => 'Còn hàng tại 7 cửa hàng',
                 'image' => 'https://via.placeholder.com/640x640/f8fafc/0f172a?text=iPhone+16+Pro+Max',
                 'gallery' => [
                     'https://via.placeholder.com/960x960/f8fafc/0f172a?text=iPhone+16+Pro+Max+Front',
@@ -206,12 +242,12 @@ class ProductCatalog
                     'https://via.placeholder.com/960x960/dbeafe/0f172a?text=iPhone+16+Pro+Max+Camera',
                     'https://via.placeholder.com/960x960/fae8ff/0f172a?text=iPhone+16+Pro+Max+In+Hand',
                 ],
-                'benefits' => ['Tra gop 0%', 'Thu cu doi moi tro gia 2.500.000d', 'Tang op lung cao cap'],
+                'benefits' => ['Trả góp 0%', 'Thu cũ đổi mới trợ giá 2.500.000đ', 'Tặng ốp lưng cao cấp'],
                 'highlights' => [
-                    'Chip A18 Pro cho hieu nang manh va tiet kiem pin.',
-                    'Man hinh 6.9 inch Super Retina XDR, do sang cao, hien thi ngoai troi tot.',
-                    'Cum camera zoom quang hoc linh hoat, quay video 4K ProRes.',
-                    'Khung titanium, do ben cao, trong luong can doi.',
+                    'Chip A18 Pro cho hiệu năng mạnh và tiết kiệm pin.',
+                    'Màn hình 6.9 inch Super Retina XDR, độ sáng cao, hiển thị ngoài trời tốt.',
+                    'Cụm camera zoom quang học linh hoạt, quay video 4K ProRes.',
+                    'Khung titanium, độ bền cao, trọng lượng cân đối.',
                 ],
                 'variants' => [
                     ['label' => '256GB', 'active' => true],
@@ -225,38 +261,38 @@ class ProductCatalog
                     ['label' => 'Titan Sa Mac', 'hex' => '#bba38c', 'active' => false],
                 ],
                 'technical_specs' => [
-                    ['label' => 'Man hinh', 'value' => '6.9 inch Super Retina XDR OLED, 120Hz'],
+                    ['label' => 'Màn hình', 'value' => '6.9 inch Super Retina XDR OLED, 120Hz'],
                     ['label' => 'Chip', 'value' => 'Apple A18 Pro'],
                     ['label' => 'RAM', 'value' => '8GB'],
-                    ['label' => 'Bo nho', 'value' => '256GB NVMe'],
+                    ['label' => 'Bộ nhớ', 'value' => '256GB NVMe'],
                     ['label' => 'Camera sau', 'value' => '48MP + 48MP + 12MP, zoom quang 5x'],
-                    ['label' => 'Camera truoc', 'value' => '12MP TrueDepth'],
-                    ['label' => 'Pin', 'value' => '4676mAh, sac nhanh USB-C 45W'],
-                    ['label' => 'Ket noi', 'value' => '5G, Wi-Fi 7, Bluetooth 5.4, NFC'],
-                    ['label' => 'He dieu hanh', 'value' => 'iOS 26'],
-                    ['label' => 'Chong nuoc', 'value' => 'IP68'],
+                    ['label' => 'Camera trước', 'value' => '12MP TrueDepth'],
+                    ['label' => 'Pin', 'value' => '4676mAh, sạc nhanh USB-C 45W'],
+                    ['label' => 'Kết nối', 'value' => '5G, Wi-Fi 7, Bluetooth 5.4, NFC'],
+                    ['label' => 'Hệ điều hành', 'value' => 'iOS 26'],
+                    ['label' => 'Chống nước', 'value' => 'IP68'],
                 ],
-                'in_the_box' => ['Than may iPhone 16 Pro Max', 'Cap USB-C', 'Tai lieu huong dan', 'Que lay SIM'],
+                'in_the_box' => ['Thân máy iPhone 16 Pro Max', 'Cáp USB-C', 'Tài liệu hướng dẫn', 'Que lấy SIM'],
                 'description_sections' => [
                     [
-                        'title' => 'Ngoai hinh cao cap va cam giac cam nam chac tay',
+                        'title' => 'Ngoại hình cao cấp và cảm giác cầm nắm chắc tay',
                         'content' => [
-                            'Khung titanium giup may nhe hon nhung van giu duoc do cung cap can thiet cho dong flagship.',
-                            'Canh vien duoc bo tron nhe, bo cuc camera sau lon nhung can doi, phu hop voi nhom nguoi dung muon mot mau may sang va ben.',
+                            'Khung titanium giúp máy nhẹ hơn nhưng vẫn giữ được độ cứng cấp cần thiết cho dòng flagship.',
+                            'Cạnh viền được bo tròn nhẹ, bố cục camera sau lớn nhưng cân đối, phù hợp với nhóm người dùng muốn một mẫu máy sáng và bền.',
                         ],
                     ],
                     [
-                        'title' => 'Man hinh lon, do sang cao, toi uu cho giai tri',
+                        'title' => 'Màn hình lớn, độ sáng cao, tối ưu cho giải trí',
                         'content' => [
-                            'Tam nen OLED 120Hz mang lai chuyen dong muot, kha nang hien thi HDR tot va mau sac no nhung khong gay.',
-                            'Kich thuoc lon phu hop cho xem phim, choi game va xu ly cong viec tren mot thiet bi di dong.',
+                            'Tấm nền OLED 120Hz mang lại chuyển động mượt, khả năng hiển thị HDR tốt và màu sắc nở nhưng không gắt.',
+                            'Kích thước lớn phù hợp cho xem phim, chơi game và xử lý công việc trên một thiết bị di động.',
                         ],
                     ],
                     [
-                        'title' => 'Cum camera da dung cho ca chup nhanh va quay video',
+                        'title' => 'Cụm camera đa dụng cho cả chụp nhanh và quay video',
                         'content' => [
-                            'Camera chinh 48MP ket hop xu ly hinh anh tot giup anh trong, sac net va xu ly da toc do cao.',
-                            'Ong kinh zoom 5x dac biet huu ich cho chup san khau, du lich va quay video o khoang cach xa.',
+                            'Camera chính 48MP kết hợp xử lý hình ảnh tốt giúp ảnh trong, sắc nét và xử lý đa tốc độ cao.',
+                            'Ống kính zoom 5x đặc biệt hữu ích cho chụp sân khấu, du lịch và quay video ở khoảng cách xa.',
                         ],
                     ],
                 ],
@@ -264,7 +300,7 @@ class ProductCatalog
             'samsung-galaxy-s25-ultra-512gb' => [
                 'slug' => 'samsung-galaxy-s25-ultra-512gb',
                 'name' => 'Samsung Galaxy S25 Ultra 512GB',
-                'category' => 'Dien thoai',
+                'category' => 'Điện thoại',
                 'brand' => 'Samsung',
                 'sku' => 'SMS-S25U-512-TI',
                 'storage' => '512GB',
@@ -273,20 +309,20 @@ class ProductCatalog
                 'discount' => '-13%',
                 'rating' => 4,
                 'reviews_count' => 76,
-                'tag' => 'Bao hanh 12 thang',
-                'color' => 'Titan Gray',
-                'status' => 'Con hang tai 5 cua hang',
+                'tag' => 'Bảo hành 12 tháng',
+                'color' => 'Titan Xam',
+                'status' => 'Còn hàng tại 5 cửa hàng',
                 'image' => 'https://via.placeholder.com/640x640/f5f3ff/1f2937?text=Galaxy+S25+Ultra',
                 'gallery' => [
                     'https://via.placeholder.com/960x960/f5f3ff/1f2937?text=Galaxy+S25+Ultra+Front',
                     'https://via.placeholder.com/960x960/e9d5ff/1f2937?text=Galaxy+S25+Ultra+Back',
                     'https://via.placeholder.com/960x960/ede9fe/1f2937?text=Galaxy+S25+Ultra+Camera',
                 ],
-                'benefits' => ['Qua tang sac nhanh', 'Goi roi vo man hinh', 'Ho tro doi may trong 7 ngay'],
+                'benefits' => ['Quà tặng sạc nhanh', 'Gói rời vỏ màn hình', 'Hỗ trợ đổi máy trong 7 ngày'],
                 'highlights' => [
-                    'But S Pen tich hop cho ghi chu va thao tac nhanh.',
-                    'Man hinh AMOLED lon, phu hop xu ly cong viec va giai tri.',
-                    'Camera zoom xa linh hoat, chat luong anh on dinh.',
+                    'Bút S Pen tích hợp cho ghi chú và thao tác nhanh.',
+                    'Màn hình AMOLED lớn, phù hợp xử lý công việc và giải trí.',
+                    'Camera zoom xa linh hoạt, chất lượng ảnh ổn định.',
                 ],
                 'variants' => [
                     ['label' => '256GB', 'active' => false],
@@ -294,27 +330,27 @@ class ProductCatalog
                     ['label' => '1TB', 'active' => false],
                 ],
                 'colors' => [
-                    ['label' => 'Titan Gray', 'hex' => '#6b7280', 'active' => true],
-                    ['label' => 'Titan Black', 'hex' => '#1f2937', 'active' => false],
-                    ['label' => 'Titan Silver', 'hex' => '#d1d5db', 'active' => false],
+                    ['label' => 'Titan Xam', 'hex' => '#6b7280', 'active' => true],
+                    ['label' => 'Titan Den', 'hex' => '#1f2937', 'active' => false],
+                    ['label' => 'Titan Bac', 'hex' => '#d1d5db', 'active' => false],
                 ],
                 'technical_specs' => [
-                    ['label' => 'Man hinh', 'value' => '6.8 inch Dynamic AMOLED 2X, 120Hz'],
+                    ['label' => 'Màn hình', 'value' => '6.8 inch Dynamic AMOLED 2X, 120Hz'],
                     ['label' => 'Chip', 'value' => 'Snapdragon 8 Elite for Galaxy'],
                     ['label' => 'RAM', 'value' => '12GB'],
-                    ['label' => 'Bo nho', 'value' => '512GB UFS 4.0'],
+                    ['label' => 'Bộ nhớ', 'value' => '512GB UFS 4.0'],
                     ['label' => 'Camera sau', 'value' => '200MP + 50MP + 50MP + 12MP'],
-                    ['label' => 'Pin', 'value' => '5000mAh, sac nhanh 45W'],
-                    ['label' => 'He dieu hanh', 'value' => 'One UI 8'],
-                    ['label' => 'Tinh nang dac biet', 'value' => 'S Pen, Samsung DeX'],
+                    ['label' => 'Pin', 'value' => '5000mAh, sạc nhanh 45W'],
+                    ['label' => 'Hệ điều hành', 'value' => 'One UI 8'],
+                    ['label' => 'Tính năng đặc biệt', 'value' => 'S Pen, Samsung DeX'],
                 ],
-                'in_the_box' => ['Than may Galaxy S25 Ultra', 'Cap USB-C', 'But S Pen tich hop', 'Tai lieu huong dan'],
+                'in_the_box' => ['Thân máy Galaxy S25 Ultra', 'Cáp USB-C', 'Bút S Pen tích hợp', 'Tài liệu hướng dẫn'],
                 'description_sections' => [
                     [
-                        'title' => 'Flagship Android huong den nhom nguoi dung nang',
+                        'title' => 'Flagship Android hướng đến nhóm người dùng nặng',
                         'content' => [
-                            'Galaxy S25 Ultra phu hop cho nguoi can mot chiec may co camera da dung, pin tot va bo cong cu phan mem phuc vu cong viec.',
-                            'But S Pen tiep tuc la diem khac biet ro nhat cho nhu cau ghi chu, ve phac thao va ky tai lieu nhanh.',
+                            'Galaxy S25 Ultra phù hợp cho người cần một chiếc máy có camera đã dùng, pin tốt và bộ công cụ phần mềm phục vụ công việc.',
+                            'Bút S Pen tiếp tục là điểm khác biệt rõ nhất cho nhu cầu ghi chú, vẽ phác thảo và ký tài liệu nhanh.',
                         ],
                     ],
                 ],
@@ -322,7 +358,7 @@ class ProductCatalog
             'xiaomi-15-ultra-512gb' => [
                 'slug' => 'xiaomi-15-ultra-512gb',
                 'name' => 'Xiaomi 15 Ultra 16GB 512GB',
-                'category' => 'Dien thoai',
+                'category' => 'Điện thoại',
                 'brand' => 'Xiaomi',
                 'sku' => 'XMI-15U-512-BLK',
                 'storage' => '512GB',
@@ -331,40 +367,40 @@ class ProductCatalog
                 'discount' => '-12%',
                 'rating' => 4,
                 'reviews_count' => 43,
-                'tag' => 'Camera flagship',
-                'color' => 'Black',
-                'status' => 'Con hang online',
+                'tag' => 'Camera dinh',
+                'color' => 'Den',
+                'status' => 'Còn hàng online',
                 'image' => 'https://via.placeholder.com/640x640/ecfeff/0f172a?text=Xiaomi+15+Ultra',
                 'gallery' => [
                     'https://via.placeholder.com/960x960/ecfeff/0f172a?text=Xiaomi+15+Ultra+Front',
                     'https://via.placeholder.com/960x960/cffafe/0f172a?text=Xiaomi+15+Ultra+Back',
                     'https://via.placeholder.com/960x960/e0f2fe/0f172a?text=Xiaomi+15+Ultra+Camera',
                 ],
-                'benefits' => ['Tang tai nghe bluetooth', 'Ho tro giao nhanh', 'Giam them khi thanh toan online'],
+                'benefits' => ['Tặng tai nghe bluetooth', 'Hỗ trợ giao nhanh', 'Giảm thêm khi thanh toán online'],
                 'highlights' => [
-                    'He thong camera dong thuong hieu Leica cho muc do chi tiet cao.',
-                    'RAM 16GB phu hop da nhiem nang va quay phim 4K.',
+                    'Hệ thống camera dòng thương hiệu Leica cho mức độ chi tiết cao.',
+                    'RAM 16GB phù hợp đa nhiệm nặng và quay phim 4K.',
                 ],
                 'variants' => [
                     ['label' => '256GB', 'active' => false],
                     ['label' => '512GB', 'active' => true],
                 ],
                 'colors' => [
-                    ['label' => 'Black', 'hex' => '#111827', 'active' => true],
-                    ['label' => 'Silver', 'hex' => '#94a3b8', 'active' => false],
+                    ['label' => 'Den', 'hex' => '#111827', 'active' => true],
+                    ['label' => 'Bac', 'hex' => '#94a3b8', 'active' => false],
                 ],
                 'technical_specs' => [
-                    ['label' => 'Man hinh', 'value' => '6.73 inch AMOLED 120Hz'],
+                    ['label' => 'Màn hình', 'value' => '6.73 inch AMOLED 120Hz'],
                     ['label' => 'Chip', 'value' => 'Snapdragon 8 Elite'],
                     ['label' => 'RAM', 'value' => '16GB'],
-                    ['label' => 'Bo nho', 'value' => '512GB UFS 4.0'],
+                    ['label' => 'Bộ nhớ', 'value' => '512GB UFS 4.0'],
                 ],
-                'in_the_box' => ['Than may Xiaomi 15 Ultra', 'Cap USB-C', 'Op lung', 'Tai lieu huong dan'],
+                'in_the_box' => ['Thân máy Xiaomi 15 Ultra', 'Cáp USB-C', 'Ốp lưng', 'Tài liệu hướng dẫn'],
                 'description_sections' => [
                     [
-                        'title' => 'Chon lua cho nguoi me chup anh bang dien thoai',
+                        'title' => 'Chọn lựa cho người mê chụp ảnh bằng điện thoại',
                         'content' => [
-                            'Cum camera lon la diem nhan manh ve nhan dien va cung tao gia tri su dung ro rang cho nhu cau chup du lich, street life va quay video.',
+                            'Cụm camera lớn là điểm nhấn mạnh về nhận diện và cũng tạo giá trị sử dụng rõ ràng cho nhu cầu chụp du lịch, street life và quay video.',
                         ],
                     ],
                 ],
@@ -372,7 +408,7 @@ class ProductCatalog
             'iphone-15-128gb' => [
                 'slug' => 'iphone-15-128gb',
                 'name' => 'iPhone 15 128GB',
-                'category' => 'Dien thoai',
+                'category' => 'Điện thoại',
                 'brand' => 'Apple',
                 'sku' => 'APL-IP15-128-BLU',
                 'storage' => '128GB',
@@ -382,38 +418,38 @@ class ProductCatalog
                 'rating' => 5,
                 'reviews_count' => 204,
                 'tag' => 'Gia tot',
-                'color' => 'Blue',
-                'status' => 'Con hang tai 8 cua hang',
+                'color' => 'Xanh',
+                'status' => 'Còn hàng tại 8 cửa hàng',
                 'image' => 'https://via.placeholder.com/640x640/eff6ff/0f172a?text=iPhone+15',
                 'gallery' => [
                     'https://via.placeholder.com/960x960/eff6ff/0f172a?text=iPhone+15+Front',
                     'https://via.placeholder.com/960x960/dbeafe/0f172a?text=iPhone+15+Back',
                 ],
-                'benefits' => ['Tang cap sac nhanh', 'Bao hanh 1 doi 1', 'Ho tro setup may moi'],
+                'benefits' => ['Tặng cáp sạc nhanh', 'Bảo hành 1 đổi 1', 'Hỗ trợ setup máy mới'],
                 'highlights' => [
-                    'Mau de tiep can cho nguoi can iPhone on dinh, de dung va dep.',
+                    'Mẫu dễ tiếp cận cho người cần iPhone ổn định, dễ dùng và đẹp.',
                 ],
                 'variants' => [
                     ['label' => '128GB', 'active' => true],
                     ['label' => '256GB', 'active' => false],
                 ],
                 'colors' => [
-                    ['label' => 'Blue', 'hex' => '#60a5fa', 'active' => true],
-                    ['label' => 'Pink', 'hex' => '#f9a8d4', 'active' => false],
-                    ['label' => 'Black', 'hex' => '#111827', 'active' => false],
+                    ['label' => 'Xanh', 'hex' => '#60a5fa', 'active' => true],
+                    ['label' => 'Hong', 'hex' => '#f9a8d4', 'active' => false],
+                    ['label' => 'Den', 'hex' => '#111827', 'active' => false],
                 ],
                 'technical_specs' => [
-                    ['label' => 'Man hinh', 'value' => '6.1 inch Super Retina XDR'],
+                    ['label' => 'Màn hình', 'value' => '6.1 inch Super Retina XDR'],
                     ['label' => 'Chip', 'value' => 'Apple A16 Bionic'],
                     ['label' => 'RAM', 'value' => '6GB'],
-                    ['label' => 'Bo nho', 'value' => '128GB'],
+                    ['label' => 'Bộ nhớ', 'value' => '128GB'],
                 ],
-                'in_the_box' => ['Than may iPhone 15', 'Cap USB-C', 'Tai lieu huong dan'],
+                'in_the_box' => ['Thân máy iPhone 15', 'Cáp USB-C', 'Tài liệu hướng dẫn'],
                 'description_sections' => [
                     [
-                        'title' => 'iPhone de mua nhat trong nhom gia tam trung cao',
+                        'title' => 'iPhone dễ mua nhất trong nhóm giá tầm trung cao',
                         'content' => [
-                            'May phu hop cho nguoi chuyen tu Android sang iPhone hoac can mot thiet bi nho gon, giao dien on dinh va chup anh tot.',
+                            'Máy phù hợp cho người chuyển từ Android sang iPhone hoặc cần một thiết bị nhỏ gọn, giao diện ổn định và chụp ảnh tốt.',
                         ],
                     ],
                 ],
@@ -432,17 +468,17 @@ class ProductCatalog
                 'reviews_count' => 31,
                 'tag' => 'Mong nhe',
                 'color' => 'Midnight',
-                'status' => 'Con hang tai 4 cua hang',
+                'status' => 'Còn hàng tại 4 cửa hàng',
                 'image' => 'https://via.placeholder.com/640x640/fef3c7/0f172a?text=MacBook+Air+M4',
                 'gallery' => [
                     'https://via.placeholder.com/960x960/fef3c7/0f172a?text=MacBook+Air+Open',
                     'https://via.placeholder.com/960x960/fde68a/0f172a?text=MacBook+Air+Side',
                     'https://via.placeholder.com/960x960/fff7ed/0f172a?text=MacBook+Air+Keyboard',
                 ],
-                'benefits' => ['Tang tui va chuot', 'Bao hanh pin 12 thang', 'Ho tro tra gop 0%'],
+                'benefits' => ['Tặng túi và chuột', 'Bảo hành pin 12 tháng', 'Hỗ trợ trả góp 0%'],
                 'highlights' => [
-                    'Thiet ke mong nhe, phu hop hoc tap va cong viec di dong.',
-                    'Chip M4 cho hieu nang/nhiet do rat can doi trong tam gia.',
+                    'Thiết kế mỏng nhẹ, phù hợp học tập và công việc di động.',
+                    'Chip M4 cho hiệu năng / nhiệt độ rất cân đối trong tầm giá.',
                 ],
                 'variants' => [
                     ['label' => '16GB / 256GB', 'active' => true],
@@ -451,32 +487,32 @@ class ProductCatalog
                 ],
                 'colors' => [
                     ['label' => 'Midnight', 'hex' => '#1e293b', 'active' => true],
-                    ['label' => 'Silver', 'hex' => '#cbd5e1', 'active' => false],
+                    ['label' => 'Bac', 'hex' => '#cbd5e1', 'active' => false],
                     ['label' => 'Starlight', 'hex' => '#e7e5d4', 'active' => false],
                 ],
                 'technical_specs' => [
-                    ['label' => 'Man hinh', 'value' => '13.6 inch Liquid Retina'],
+                    ['label' => 'Màn hình', 'value' => '13.6 inch Liquid Retina'],
                     ['label' => 'Chip', 'value' => 'Apple M4 10-core CPU / 10-core GPU'],
                     ['label' => 'RAM', 'value' => '16GB Unified Memory'],
                     ['label' => 'SSD', 'value' => '256GB'],
-                    ['label' => 'Pin', 'value' => 'Len den 18 gio xem video'],
-                    ['label' => 'Cong ket noi', 'value' => 'MagSafe 3, 2 x Thunderbolt / USB 4'],
-                    ['label' => 'Can nang', 'value' => '1.24kg'],
+                    ['label' => 'Pin', 'value' => 'Lên đến 18 giờ xem video'],
+                    ['label' => 'Kết nối', 'value' => 'MagSafe 3, 2 x Thunderbolt / USB 4'],
+                    ['label' => 'Cân nặng', 'value' => '1.24kg'],
                 ],
-                'in_the_box' => ['MacBook Air M4', 'Cap MagSafe 3', 'Cu sac USB-C', 'Tai lieu huong dan'],
+                'in_the_box' => ['MacBook Air M4', 'Cáp MagSafe 3', 'Củ sạc USB-C', 'Tài liệu hướng dẫn'],
                 'description_sections' => [
                     [
-                        'title' => 'Cau hinh can doi cho hoc tap, van phong va creator co ban',
+                        'title' => 'Cấu hình cân đối cho học tập, văn phòng và creator cơ bản',
                         'content' => [
-                            'MacBook Air M4 la lua chon hop ly cho nguoi can may dep, pin dai va he dieu hanh on dinh de lam viec hang ngay.',
-                            'Ban RAM 16GB giup giai quyet tot hon nhu cau mo nhieu tab, dung Photoshop co ban va xu ly video ngan.',
+                            'MacBook Air M4 là lựa chọn hợp lý cho người cần máy đẹp, pin dài và hệ điều hành ổn định để làm việc hàng ngày.',
+                            'Bản RAM 16GB giúp giải quyết tốt hơn nhu cầu mở nhiều tab, dùng Photoshop cơ bản và xử lý video ngắn.',
                         ],
                     ],
                     [
-                        'title' => 'Trai nghiem nhap lieu va hien thi de chiu trong thoi gian dai',
+                        'title' => 'Trải nghiệm nhập liệu và hiển thị dễ chịu trong thời gian dài',
                         'content' => [
-                            'Ban phim va trackpad van la nhung diem manh de giup nhom nguoi dung hoc tap, viet tai lieu va thao tac chinh xac.',
-                            'Man hinh Liquid Retina sac net, mau sac de chiu, phu hop cho xem noi dung va lam viec van phong.',
+                            'Bàn phím và trackpad vẫn là những điểm mạnh để giúp nhóm người dùng học tập, viết tài liệu và thao tác chính xác.',
+                            'Màn hình Liquid Retina sắc nét, màu sắc dễ chịu, phù hợp cho xem nội dung và làm việc văn phòng.',
                         ],
                     ],
                 ],
@@ -493,36 +529,36 @@ class ProductCatalog
                 'discount' => '-8%',
                 'rating' => 5,
                 'reviews_count' => 22,
-                'tag' => 'Pro choice',
-                'color' => 'Space Black',
-                'status' => 'Con hang dat truoc',
+                'tag' => 'Lua chon Pro',
+                'color' => 'Den Space',
+                'status' => 'Còn hàng đặt trước',
                 'image' => 'https://via.placeholder.com/640x640/fae8ff/0f172a?text=MacBook+Pro+M4',
                 'gallery' => [
                     'https://via.placeholder.com/960x960/fae8ff/0f172a?text=MacBook+Pro+Open',
                     'https://via.placeholder.com/960x960/f5d0fe/0f172a?text=MacBook+Pro+Display',
                 ],
-                'benefits' => ['Goi Office 365', 'Tang hub chuyen doi', 'Ho tro dong bo du lieu'],
-                'highlights' => ['Man hinh XDR dep, do sang cao.', 'Phu hop editor, designer va developer can may ben bi.'],
+                'benefits' => ['Gói Office 365', 'Tặng hub chuyển đổi', 'Hỗ trợ đồng bộ dữ liệu'],
+                'highlights' => ['Màn hình XDR đẹp, độ sáng cao.', 'Phù hợp editor, designer và developer cần máy bền bỉ.'],
                 'variants' => [
                     ['label' => '16GB / 512GB', 'active' => true],
                     ['label' => '24GB / 1TB', 'active' => false],
                 ],
                 'colors' => [
-                    ['label' => 'Space Black', 'hex' => '#111827', 'active' => true],
-                    ['label' => 'Silver', 'hex' => '#d1d5db', 'active' => false],
+                    ['label' => 'Den Space', 'hex' => '#111827', 'active' => true],
+                    ['label' => 'Bac', 'hex' => '#d1d5db', 'active' => false],
                 ],
                 'technical_specs' => [
-                    ['label' => 'Man hinh', 'value' => '14.2 inch Liquid Retina XDR, ProMotion'],
+                    ['label' => 'Màn hình', 'value' => '14.2 inch Liquid Retina XDR, ProMotion'],
                     ['label' => 'Chip', 'value' => 'Apple M4 Pro'],
                     ['label' => 'RAM', 'value' => '16GB Unified Memory'],
                     ['label' => 'SSD', 'value' => '512GB'],
                 ],
-                'in_the_box' => ['MacBook Pro M4', 'Cap MagSafe 3', 'Cu sac USB-C 70W'],
+                'in_the_box' => ['MacBook Pro M4', 'Cáp MagSafe 3', 'Củ sạc USB-C 70W'],
                 'description_sections' => [
                     [
-                        'title' => 'Lua chon hop ly cho nhom chuyen nghiep can hieu nang cao hon',
+                        'title' => 'Lựa chọn hợp lý cho nhóm chuyên nghiệp cần hiệu năng cao hơn',
                         'content' => [
-                            'Dong Pro phu hop nguoi can render nhanh, code project lon hoac lam viec voi file anh/video dung luong lon hon so voi dong Air.',
+                            'Dòng Pro phù hợp người cần render nhanh, code project lớn hoặc làm việc với file ảnh/video dung lượng lớn hơn so với dòng Air.',
                         ],
                     ],
                 ],
@@ -540,34 +576,34 @@ class ProductCatalog
                 'rating' => 4,
                 'reviews_count' => 17,
                 'tag' => 'Desktop nho gon',
-                'color' => 'Silver',
-                'status' => 'Con hang online',
+                'color' => 'Bac',
+                'status' => 'Còn hàng online',
                 'image' => 'https://via.placeholder.com/640x640/e0f2fe/0f172a?text=Mac+mini+M4',
                 'gallery' => [
                     'https://via.placeholder.com/960x960/e0f2fe/0f172a?text=Mac+mini+Front',
                     'https://via.placeholder.com/960x960/bae6fd/0f172a?text=Mac+mini+Back',
                 ],
-                'benefits' => ['Tang bo phim khong day', 'Luu kho va giao nhanh', 'Ho tro lap dat tai nha'],
-                'highlights' => ['Giai phap desktop macOS chi phi hop ly.', 'Phu hop setup ban lam viec gon gang.'],
+                'benefits' => ['Tặng bộ phím không dây', 'Lưu kho và giao nhanh', 'Hỗ trợ lắp đặt tại nhà'],
+                'highlights' => ['Giải pháp desktop macOS chi phí hợp lý.', 'Phù hợp setup bàn làm việc gọn gàng.'],
                 'variants' => [
                     ['label' => '16GB / 256GB', 'active' => true],
                     ['label' => '16GB / 512GB', 'active' => false],
                 ],
                 'colors' => [
-                    ['label' => 'Silver', 'hex' => '#cbd5e1', 'active' => true],
+                    ['label' => 'Bac', 'hex' => '#cbd5e1', 'active' => true],
                 ],
                 'technical_specs' => [
                     ['label' => 'Chip', 'value' => 'Apple M4'],
                     ['label' => 'RAM', 'value' => '16GB Unified Memory'],
                     ['label' => 'SSD', 'value' => '256GB'],
-                    ['label' => 'Cong ket noi', 'value' => 'Thunderbolt, HDMI, Ethernet'],
+                    ['label' => 'Kết nối', 'value' => 'Thunderbolt, HDMI, Ethernet'],
                 ],
-                'in_the_box' => ['Mac mini M4', 'Day nguon'],
+                'in_the_box' => ['Mac mini M4', 'Dây nguồn'],
                 'description_sections' => [
                     [
-                        'title' => 'Desktop nho gon de nang cap tu Windows van phong',
+                        'title' => 'Desktop nhỏ gọn để nâng cấp từ Windows văn phòng',
                         'content' => [
-                            'Neu da co san man hinh, Mac mini la cach vao he sinh thai Apple voi chi phi hop ly nhat trong nhom may Mac moi.',
+                            'Nếu đã có sẵn màn hình, Mac mini là cách vào hệ sinh thái Apple với chi phí hợp lý nhất trong nhóm máy Mac mới.',
                         ],
                     ],
                 ],
@@ -584,35 +620,35 @@ class ProductCatalog
                 'discount' => '-7%',
                 'rating' => 4,
                 'reviews_count' => 11,
-                'tag' => 'All in one',
-                'color' => 'Blue',
-                'status' => 'Con hang tai 2 cua hang',
+                'tag' => 'Tất cả trong một',
+                'color' => 'Xanh',
+                'status' => 'Còn hàng tại 2 cửa hàng',
                 'image' => 'https://via.placeholder.com/640x640/ede9fe/0f172a?text=iMac+M4',
                 'gallery' => [
                     'https://via.placeholder.com/960x960/ede9fe/0f172a?text=iMac+Front',
                     'https://via.placeholder.com/960x960/e9d5ff/0f172a?text=iMac+Desk+Setup',
                 ],
-                'benefits' => ['Tang Magic Mouse', 'Bao hanh chinh hang', 'Ho tro giao va setup'],
-                'highlights' => ['May all-in-one gon dep cho van phong cao cap.', 'Man hinh lon, am thanh tot, setup nhanh.'],
+                'benefits' => ['Tặng Magic Mouse', 'Bảo hành chính hãng', 'Hỗ trợ giao và setup'],
+                'highlights' => ['Máy all-in-one gọn đẹp cho văn phòng cao cấp.', 'Màn hình lớn, âm thanh tốt, setup nhanh.'],
                 'variants' => [
                     ['label' => '16GB / 512GB', 'active' => true],
                 ],
                 'colors' => [
-                    ['label' => 'Blue', 'hex' => '#60a5fa', 'active' => true],
-                    ['label' => 'Green', 'hex' => '#4ade80', 'active' => false],
+                    ['label' => 'Xanh', 'hex' => '#60a5fa', 'active' => true],
+                    ['label' => 'Xanh la', 'hex' => '#4ade80', 'active' => false],
                 ],
                 'technical_specs' => [
-                    ['label' => 'Man hinh', 'value' => '24 inch 4.5K Retina'],
+                    ['label' => 'Màn hình', 'value' => '24 inch 4.5K Retina'],
                     ['label' => 'Chip', 'value' => 'Apple M4'],
                     ['label' => 'RAM', 'value' => '16GB'],
                     ['label' => 'SSD', 'value' => '512GB'],
                 ],
-                'in_the_box' => ['iMac M4', 'Magic Keyboard', 'Magic Mouse', 'Day nguon'],
+                'in_the_box' => ['iMac M4', 'Magic Keyboard', 'Magic Mouse', 'Dây nguồn'],
                 'description_sections' => [
                     [
-                        'title' => 'May tinh ban lam viec dep, gon va de van hanh',
+                        'title' => 'Máy tính bàn làm việc đẹp, gọn và dễ vận hành',
                         'content' => [
-                            'iMac phu hop showroom, van phong sang tao va nhom nguoi dung uu tien mot setup gon gang nhung van dep mat.',
+                            'iMac phù hợp showroom, văn phòng sáng tạo và nhóm người dùng ưu tiên một setup gọn gàng nhưng vẫn đẹp mắt.',
                         ],
                     ],
                 ],
@@ -730,14 +766,14 @@ class ProductCatalog
                         'children' => [
                             [
                                 'slug' => 'iphone-16-series',
-                                'label' => 'iPhone 16 Series',
+                                'label' => 'Dòng iPhone 16',
                                 'children' => [
                                     ['slug' => 'iphone-16-pro-max', 'label' => 'iPhone 16 Pro Max'],
                                 ],
                             ],
                             [
                                 'slug' => 'iphone-15-series',
-                                'label' => 'iPhone 15 Series',
+                                'label' => 'Dòng iPhone 15',
                                 'children' => [
                                     ['slug' => 'iphone-15', 'label' => 'iPhone 15'],
                                     ['slug' => 'iphone-15-pro', 'label' => 'iPhone 15 Pro'],
@@ -751,21 +787,21 @@ class ProductCatalog
                         'children' => [
                             [
                                 'slug' => 'macbook-air-series',
-                                'label' => 'MacBook Air Series',
+                                'label' => 'Dòng MacBook Air',
                                 'children' => [
                                     ['slug' => 'macbook-air-m4', 'label' => 'MacBook Air M4'],
                                 ],
                             ],
                             [
                                 'slug' => 'macbook-pro-series',
-                                'label' => 'MacBook Pro Series',
+                                'label' => 'Dòng MacBook Pro',
                                 'children' => [
                                     ['slug' => 'macbook-pro-m4', 'label' => 'MacBook Pro M4'],
                                 ],
                             ],
                             [
                                 'slug' => 'desktop-mac',
-                                'label' => 'Desktop Mac',
+                                'label' => 'Máy để bàn',
                                 'children' => [
                                     ['slug' => 'mac-mini', 'label' => 'Mac mini'],
                                     ['slug' => 'imac', 'label' => 'iMac'],
@@ -785,7 +821,7 @@ class ProductCatalog
                         'children' => [
                             [
                                 'slug' => 'galaxy-s25-series',
-                                'label' => 'Galaxy S25 Series',
+                                'label' => 'Dòng Galaxy S25',
                                 'children' => [
                                     ['slug' => 'galaxy-s25-ultra', 'label' => 'Galaxy S25 Ultra'],
                                 ],
@@ -800,11 +836,11 @@ class ProductCatalog
                 'children' => [
                     [
                         'slug' => 'xiaomi-phone',
-                        'label' => 'Xiaomi Phone',
+                        'label' => 'Dien thoai Xiaomi',
                         'children' => [
                             [
                                 'slug' => 'xiaomi-15-series',
-                                'label' => 'Xiaomi 15 Series',
+                                'label' => 'Dòng Xiaomi 15',
                                 'children' => [
                                     ['slug' => 'xiaomi-15-ultra', 'label' => 'Xiaomi 15 Ultra'],
                                 ],
@@ -1086,6 +1122,7 @@ class ProductCatalog
             ],
             'benefits' => $product->highlights ?: ['Trả góp 0%', 'Thu cũ đổi mới trợ giá', $product->warranty_policy ?: 'Bảo hành chính hãng'],
             'in_the_box' => ['Sản phẩm', 'Phụ kiện tiêu chuẩn', 'Phiếu bảo hành'],
+            'description_html' => $product->description,
             'description_sections' => $this->descriptionSections($product),
         ];
     }

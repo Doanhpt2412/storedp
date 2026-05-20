@@ -1,7 +1,9 @@
 <?php
 
-use App\Http\Controllers\Frontend\CategoryController;
+use App\Http\Controllers\Admin\HomeDisplayController;
+use App\Http\Controllers\Admin\SiteSettingController;
 use App\Http\Controllers\Frontend\CartController;
+use App\Http\Controllers\Frontend\CategoryController;
 use App\Http\Controllers\Frontend\CheckoutController;
 use App\Http\Controllers\Frontend\HomeController;
 use App\Http\Controllers\Frontend\ProductController;
@@ -15,13 +17,11 @@ Route::post('/gio-hang', [CartController::class, 'store'])->name('cart.store');
 Route::patch('/gio-hang/{lineId}', [CartController::class, 'update'])->name('cart.update');
 Route::delete('/gio-hang/{lineId}', [CartController::class, 'destroy'])->name('cart.destroy');
 
-// Checkout & Tra cứu đơn hàng
 Route::get('/dat-hang', [CheckoutController::class, 'index'])->name('checkout.index');
 Route::post('/dat-hang', [CheckoutController::class, 'store'])->name('checkout.store');
 Route::get('/dat-hang/thanh-cong/{order_code}', [CheckoutController::class, 'success'])->name('checkout.success');
 Route::get('/tra-cuu-don-hang', [CheckoutController::class, 'search'])->name('checkout.search');
 
-// Tin tức & Blog
 Route::get('/tin-tuc', [\App\Http\Controllers\Frontend\BlogController::class, 'index'])->name('blog.index');
 Route::get('/tin-tuc/{category_slug}', [\App\Http\Controllers\Frontend\BlogController::class, 'category'])->name('blog.category');
 Route::get('/tin-tuc/{category_slug}/{post_slug}', [\App\Http\Controllers\Frontend\BlogController::class, 'show'])->name('blog.show');
@@ -31,38 +31,35 @@ Route::get('/catalog/{path?}', [CategoryController::class, 'show'])
     ->name('categories.show');
 Route::get('/products/{slug}', [ProductController::class, 'show'])->name('products.show');
 
-// Authentication Routes
 Route::get('/login', [App\Http\Controllers\Admin\AuthController::class, 'showLoginForm'])->name('login');
 Route::post('/login', [App\Http\Controllers\Admin\AuthController::class, 'login'])->name('login.submit');
 Route::post('/logout', [App\Http\Controllers\Admin\AuthController::class, 'logout'])->name('logout');
 
-// Admin Routes
 Route::prefix('admin')->name('admin.')->group(function () {
-    // Dashboard (Protected by auth middleware)
     Route::middleware(['auth'])->group(function () {
         Route::get('/', function () {
             return view('admin.dashboard');
         })->name('dashboard');
 
-        // Quản lý Tài khoản (CRUD + Khóa)
         Route::resource('users', App\Http\Controllers\Admin\UserController::class);
         Route::patch('users/{user}/toggle-lock', [App\Http\Controllers\Admin\UserController::class, 'toggleLock'])->name('users.toggle-lock');
 
-        // Quản lý Danh mục sản phẩm (CRUD)
         Route::resource('product-categories', App\Http\Controllers\Admin\ProductCategoryController::class);
-
-        // Quản lý Hãng sản xuất (CRUD)
         Route::resource('product-brands', App\Http\Controllers\Admin\ProductBrandController::class);
         Route::resource('products', App\Http\Controllers\Admin\ProductController::class)->except(['show']);
 
-        // Quản lý Đơn hàng
         Route::get('orders', [App\Http\Controllers\Admin\OrderController::class, 'index'])->name('orders.index');
         Route::get('orders/{order}', [App\Http\Controllers\Admin\OrderController::class, 'show'])->name('orders.show');
         Route::patch('orders/{order}/status', [App\Http\Controllers\Admin\OrderController::class, 'updateStatus'])->name('orders.update-status');
         Route::delete('orders/{order}', [App\Http\Controllers\Admin\OrderController::class, 'destroy'])->name('orders.destroy');
 
-        // Quản lý Blog & Tin tức
         Route::resource('post-categories', App\Http\Controllers\Admin\PostCategoryController::class);
         Route::resource('posts', App\Http\Controllers\Admin\PostController::class);
+
+        Route::get('homepage/display', [HomeDisplayController::class, 'edit'])->name('homepage.display.edit');
+        Route::put('homepage/display', [HomeDisplayController::class, 'update'])->name('homepage.display.update');
+
+        Route::get('settings/general', [SiteSettingController::class, 'edit'])->name('settings.general.edit');
+        Route::put('settings/general', [SiteSettingController::class, 'update'])->name('settings.general.update');
     });
 });

@@ -170,8 +170,8 @@
                 <textarea id="summary" name="summary" rows="3" class="w-full rounded-lg border border-slate-300 px-4 py-2.5 text-sm outline-none transition-all focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20">{{ old('summary', $product->summary) }}</textarea>
             </div>
             <div class="lg:col-span-2">
-                <label for="description" class="mb-1.5 block text-sm font-semibold text-slate-700">Bài viết đánh giá HTML</label>
-                <textarea id="description" name="description" rows="10" class="w-full rounded-lg border border-slate-300 px-4 py-2.5 font-mono text-sm outline-none transition-all focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20">{{ old('description', $product->description) }}</textarea>
+                <label for="product-description-editor" class="mb-1.5 block text-sm font-semibold text-slate-700">Bài viết đánh giá HTML</label>
+                <textarea id="product-description-editor" name="description" class="hidden">{{ old('description', $product->description) }}</textarea>
             </div>
         </div>
     </div>
@@ -182,7 +182,22 @@
     </div>
 </form>
 
+<script src="https://cdn.ckeditor.com/ckeditor5/41.2.1/classic/ckeditor.js"></script>
 <script>
+    document.addEventListener('DOMContentLoaded', function () {
+        const editorElement = document.querySelector('#product-description-editor');
+
+        if (editorElement) {
+            ClassicEditor
+                .create(editorElement, {
+                    toolbar: [ 'heading', '|', 'bold', 'italic', 'link', 'bulletedList', 'numberedList', 'blockQuote', 'insertTable', 'undo', 'redo' ]
+                })
+                .catch((error) => {
+                    console.error(error);
+                });
+        }
+    });
+
     (() => {
         const slugSource = document.querySelector('[data-slug-source]');
         const slugTarget = document.querySelector('[data-slug-target]');
@@ -375,3 +390,9 @@
         renderSpecs();
     })();
 </script>
+<style>
+    .ck-editor__editable {
+        min-height: 400px;
+        font-family: inherit;
+    }
+</style>

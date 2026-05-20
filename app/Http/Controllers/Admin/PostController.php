@@ -33,7 +33,7 @@ class PostController extends Controller
 
     public function create()
     {
-        $categories = PostCategory::where('is_active', true)->get();
+        $categories = PostCategory::orderBy('name')->get();
         return view('admin.posts.create', compact('categories'));
     }
 
@@ -71,7 +71,7 @@ class PostController extends Controller
 
     public function edit(Post $post)
     {
-        $categories = PostCategory::where('is_active', true)->get();
+        $categories = PostCategory::orderBy('name')->get();
         return view('admin.posts.edit', compact('post', 'categories'));
     }
 

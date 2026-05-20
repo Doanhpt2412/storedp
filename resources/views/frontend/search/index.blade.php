@@ -57,6 +57,38 @@
             </section>
         @endif
 
+        @if($query !== '' && count($posts) > 0)
+            <section class="flex flex-col gap-3">
+                <div class="flex items-center justify-between">
+                    <h2 class="text-base font-bold text-gray-900">Bài viết liên quan</h2>
+                    <span class="text-xs font-bold uppercase tracking-wider text-gray-400">{{ count($posts) }} bài viết</span>
+                </div>
+
+                <div class="grid grid-cols-1 gap-4 md:grid-cols-2">
+                    @foreach($posts as $post)
+                        <a href="{{ route('blog.show', ['category_slug' => $post['category_slug'] ?? 'tin-tuc', 'post_slug' => $post['slug']]) }}" class="rounded-2xl border border-gray-200 bg-white p-4 shadow-sm transition hover:border-orange-500 hover:shadow-md">
+                            <div class="space-y-3">
+                                <h3 class="text-base font-bold text-gray-900">{{ $post['title'] }}</h3>
+                                <p class="text-sm text-gray-500 line-clamp-3">{{ $post['excerpt'] }}</p>
+                                <div class="flex flex-wrap items-center gap-2 text-xs text-gray-400">
+                                    <span>{{ $post['category_name'] ?? 'Tin tức' }}</span>
+                                    @if($post['published_at'])
+                                        <span>•</span>
+                                        <span>{{ $post['published_at'] }}</span>
+                                    @endif
+                                </div>
+                            </div>
+                        </a>
+                    @endforeach
+                </div>
+            </section>
+        @elseif($query !== '' && count($posts) === 0)
+            <section class="rounded-2xl border border-gray-200 bg-white p-12 text-center shadow-sm">
+                <h3 class="text-base font-bold text-gray-900">Không tìm thấy bài viết phù hợp</h3>
+                <p class="mt-2 text-sm text-gray-500">Thử đổi tiêu đề, đoạn trích hoặc từ khóa khác.</p>
+            </section>
+        @endif
+
         <section class="flex flex-col gap-3">
             <div class="flex items-center justify-between">
                 <h2 class="text-base font-bold text-gray-900">Sản phẩm phù hợp</h2>
