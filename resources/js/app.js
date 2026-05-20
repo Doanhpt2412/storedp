@@ -49,6 +49,7 @@ if (galleryMain && galleryThumbs.length > 0) {
                 item.classList.remove('is-active');
             });
 
+            thumb.classList.add('is-active');
         });
     });
 }
@@ -75,6 +76,7 @@ variantPickers.forEach((picker) => {
     const statusEl = picker.querySelector('[data-variant-status]');
     const selectedStorageEl = picker.querySelector('[data-selected-storage]');
     const selectedColorEl = picker.querySelector('[data-selected-color]');
+    const cartForms = picker.querySelectorAll('[data-cart-form], [data-cart-form-buy-now]');
     const storageButtons = picker.querySelectorAll('[data-storage-option]');
     const colorButtons = picker.querySelectorAll('[data-color-option]');
 
@@ -127,6 +129,27 @@ variantPickers.forEach((picker) => {
         }
         if (selectedStorageEl) selectedStorageEl.textContent = variant.storage || '';
         if (selectedColorEl) selectedColorEl.textContent = variant.color || '';
+
+        cartForms.forEach((cartForm) => {
+            const skuInput = cartForm.querySelector('[data-cart-sku]');
+            const storageInput = cartForm.querySelector('[data-cart-storage]');
+            const colorInput = cartForm.querySelector('[data-cart-color]');
+            const priceInput = cartForm.querySelector('[data-cart-price]');
+            const oldPriceInput = cartForm.querySelector('[data-cart-old-price]');
+            const discountInput = cartForm.querySelector('[data-cart-discount]');
+            const priceValueInput = cartForm.querySelector('[data-cart-price-value]');
+
+            if (skuInput) skuInput.value = variant.sku || '';
+            if (storageInput) storageInput.value = variant.storage || '';
+            if (colorInput) colorInput.value = variant.color || '';
+            if (priceInput) priceInput.value = variant.price || '';
+            if (oldPriceInput) oldPriceInput.value = variant.old_price || '';
+            if (discountInput) discountInput.value = variant.discount || '';
+            if (priceValueInput) {
+                const numericPrice = Number(String(variant.price || '').replace(/[^\d]/g, ''));
+                priceValueInput.value = Number.isNaN(numericPrice) ? 0 : numericPrice;
+            }
+        });
 
         setButtonState(storageButtons, 'data-storage-option', variant.storage || '');
         setButtonState(colorButtons, 'data-color-option', variant.color || '');

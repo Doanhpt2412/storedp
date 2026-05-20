@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\Frontend\CategoryController;
+use App\Http\Controllers\Frontend\CartController;
 use App\Http\Controllers\Frontend\HomeController;
 use App\Http\Controllers\Frontend\ProductController;
 use App\Http\Controllers\Frontend\SearchController;
@@ -8,6 +9,10 @@ use Illuminate\Support\Facades\Route;
 
 Route::get('/', HomeController::class)->name('home');
 Route::get('/tim-kiem', SearchController::class)->name('search');
+Route::get('/gio-hang', [CartController::class, 'index'])->name('cart.index');
+Route::post('/gio-hang', [CartController::class, 'store'])->name('cart.store');
+Route::patch('/gio-hang/{lineId}', [CartController::class, 'update'])->name('cart.update');
+Route::delete('/gio-hang/{lineId}', [CartController::class, 'destroy'])->name('cart.destroy');
 Route::get('/catalog/{path?}', [CategoryController::class, 'show'])
     ->where('path', '.*')
     ->name('categories.show');
