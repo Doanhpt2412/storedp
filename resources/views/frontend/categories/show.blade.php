@@ -189,8 +189,8 @@
                     @endif
                 </div>
 
-                <!-- 5 Columns Product Grid -->
-                <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4">
+                <!-- 4 Columns Product Grid -->
+                <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-4 gap-4">
                     @forelse ($products as $product)
                         <x-frontend.product-card :product="$product" />
                     @empty

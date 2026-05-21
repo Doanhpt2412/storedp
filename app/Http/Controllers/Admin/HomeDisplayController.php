@@ -70,7 +70,7 @@ class HomeDisplayController extends Controller
             'home_banners' => $banners,
         ]);
 
-        return back()->with('success', 'Da cap nhat slide va banner trang chu.');
+        return back()->with('success', 'Đã cập nhật slide và banner trang chủ.');
     }
 
     private function normalizeHeroSlides(array $items, array $uploadedFiles, array $existingSlides): array
