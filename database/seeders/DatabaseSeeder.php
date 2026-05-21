@@ -18,7 +18,7 @@ class DatabaseSeeder extends Seeder
     {
         // Tài khoản Admin
         User::firstOrCreate(
-            ['email' => 'admin@gmail.com'],
+            ['email' => 'phamdoanh24@gmail.com'],
             [
                 'name' => 'Administrator',
                 'password' => Hash::make('password'),

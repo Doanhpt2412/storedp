@@ -1,5 +1,35 @@
 document.documentElement.classList.add('js-ready');
 
+const siteHeader = document.querySelector('[data-site-header]');
+const scrollTopButton = document.querySelector('[data-scroll-top]');
+
+if (siteHeader || scrollTopButton) {
+    let lastKnownScrollY = window.scrollY;
+
+    const syncScrollUi = () => {
+        const isScrolled = lastKnownScrollY > 24;
+        const showScrollTop = lastKnownScrollY > 360;
+
+        siteHeader?.classList.toggle('is-scrolled', isScrolled);
+        document.body.classList.toggle('has-scrolled-header', isScrolled);
+        scrollTopButton?.classList.toggle('is-visible', showScrollTop);
+    };
+
+    syncScrollUi();
+
+    window.addEventListener('scroll', () => {
+        lastKnownScrollY = window.scrollY;
+        window.requestAnimationFrame(syncScrollUi);
+    }, { passive: true });
+
+    scrollTopButton?.addEventListener('click', () => {
+        window.scrollTo({
+            top: 0,
+            behavior: 'smooth',
+        });
+    });
+}
+
 const slider = document.querySelector('[data-slider]');
 
 if (slider) {

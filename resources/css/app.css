@@ -41,6 +41,10 @@ body {
     line-height: 1.6;
 }
 
+body.has-scrolled-header {
+    --header-shadow: 0 18px 38px rgba(15, 23, 42, 0.12);
+}
+
 a {
     text-decoration: none;
 }
@@ -48,6 +52,116 @@ a {
 img {
     display: block;
     width: 100%;
+}
+
+.site-shell-header {
+    position: sticky;
+    top: 0;
+    transition:
+        transform 260ms ease,
+        box-shadow 260ms ease;
+}
+
+.site-shell-header::after {
+    content: '';
+    position: absolute;
+    inset: auto 0 0;
+    height: 1px;
+    background: linear-gradient(90deg, rgba(249, 95, 6, 0), rgba(249, 95, 6, 0.18), rgba(249, 95, 6, 0));
+    opacity: 0;
+    transition: opacity 260ms ease;
+}
+
+.site-shell-header__top,
+.site-shell-header__nav {
+    transition:
+        padding 260ms ease,
+        background-color 260ms ease,
+        box-shadow 260ms ease,
+        backdrop-filter 260ms ease,
+        transform 260ms ease,
+        opacity 260ms ease;
+}
+
+.site-shell-header__top {
+    position: relative;
+    overflow: hidden;
+}
+
+.site-shell-header__top::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(120deg, rgba(255, 255, 255, 0.12), transparent 32%, rgba(255, 255, 255, 0.08) 58%, transparent 78%);
+    transform: translateX(-140%);
+    transition: transform 620ms cubic-bezier(0.22, 1, 0.36, 1);
+    pointer-events: none;
+}
+
+.site-shell-header.is-scrolled {
+    box-shadow: var(--header-shadow, 0 14px 32px rgba(15, 23, 42, 0.1));
+}
+
+.site-shell-header.is-scrolled::after {
+    opacity: 1;
+}
+
+.site-shell-header.is-scrolled .site-shell-header__top {
+    padding-top: 0.65rem;
+    padding-bottom: 0.65rem;
+}
+
+.site-shell-header.is-scrolled .site-shell-header__top::before {
+    transform: translateX(140%);
+}
+
+.site-shell-header.is-scrolled .site-shell-header__nav {
+    padding-top: 0.55rem;
+    padding-bottom: 0.55rem;
+    background: rgba(255, 255, 255, 0.92);
+    backdrop-filter: blur(14px);
+}
+
+.scroll-to-top {
+    position: fixed;
+    right: 20px;
+    bottom: 20px;
+    z-index: 60;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 50px;
+    height: 50px;
+    border: 0;
+    border-radius: 999px;
+    background: linear-gradient(135deg, #f95f06 0%, #ff8d1a 100%);
+    color: #fff;
+    box-shadow: 0 16px 34px rgba(249, 95, 6, 0.28);
+    cursor: pointer;
+    opacity: 0;
+    visibility: hidden;
+    transform: translateY(16px) scale(0.9);
+    transition:
+        opacity 220ms ease,
+        visibility 220ms ease,
+        transform 220ms ease,
+        box-shadow 220ms ease;
+}
+
+.scroll-to-top:hover {
+    transform: translateY(-2px) scale(1);
+    box-shadow: 0 20px 40px rgba(249, 95, 6, 0.34);
+}
+
+.scroll-to-top:focus-visible {
+    outline: 3px solid rgba(249, 115, 22, 0.28);
+    outline-offset: 3px;
+}
+
+.scroll-to-top.is-visible {
+    opacity: 1;
+    visibility: visible;
+    transform: translateY(0) scale(1);
 }
 
 .container {
@@ -2013,6 +2127,13 @@ b {
 
     .product-description-toggle {
         width: 100%;
+    }
+
+    .scroll-to-top {
+        right: 16px;
+        bottom: 16px;
+        width: 46px;
+        height: 46px;
     }
 }
 

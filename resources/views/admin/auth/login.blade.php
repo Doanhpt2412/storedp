@@ -21,6 +21,12 @@
                 </div>
             @endif
 
+            @if (session('status'))
+                <div class="mb-4 p-3 bg-emerald-50 border border-emerald-200 text-emerald-700 text-sm rounded-lg">
+                    {{ session('status') }}
+                </div>
+            @endif
+
             <form method="POST" action="{{ route('login.submit') }}" class="space-y-5">
                 @csrf
                 
@@ -41,7 +47,7 @@
                 <div>
                     <div class="flex items-center justify-between mb-1.5">
                         <label for="password" class="block text-sm font-semibold text-slate-700">Mật khẩu</label>
-                        <a href="#" class="text-sm text-blue-600 hover:text-blue-700 hover:underline font-medium">Quên mật khẩu?</a>
+                        <a href="{{ route('password.request') }}" class="text-sm text-blue-600 hover:text-blue-700 hover:underline font-medium">Quên mật khẩu?</a>
                     </div>
                     <input 
                         type="password" 

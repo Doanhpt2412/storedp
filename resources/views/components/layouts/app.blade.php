@@ -111,8 +111,8 @@
         </style>
     </head>
     <body class="min-h-screen flex flex-col">
-        <header class="w-full z-50">
-            <div class="w-full text-white py-3 shadow-md" style="background: linear-gradient(to right, #f95f06, #ff8400);">
+        <header class="site-shell-header w-full z-50" data-site-header>
+            <div class="site-shell-header__top w-full text-white py-3 shadow-md" style="background: linear-gradient(to right, #f95f06, #ff8400);">
                 <div class="max-w-[1240px] mx-auto px-4 flex items-center justify-between gap-4">
                     <div class="flex items-center gap-3">
                         <a href="{{ route('home') }}" class="flex items-center gap-2">
@@ -158,7 +158,7 @@
                 </div>
             </div>
 
-            <div class="w-full bg-white border-b border-gray-200 py-2.5">
+            <div class="site-shell-header__nav w-full bg-white border-b border-gray-200 py-2.5">
                 <div class="max-w-[1240px] mx-auto px-4 flex items-center gap-6 overflow-x-auto text-sm font-medium text-gray-700">
                     <a href="{{ route('categories.show') }}" class="flex items-center gap-1.5 whitespace-nowrap py-1 hover:text-orange-600 transition shrink-0">
                         <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M3.75 6.75h16.5M3.75 12h16.5m-16.5 5.25h16.5"></path></svg>
@@ -191,6 +191,17 @@
         </main>
 
         <div id="toast-container" class="toast-container"></div>
+        <button
+            type="button"
+            class="scroll-to-top"
+            id="scroll-to-top"
+            data-scroll-top
+            aria-label="Lên đầu trang"
+        >
+            <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2.2" viewBox="0 0 24 24" aria-hidden="true">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M5 15l7-7 7 7"></path>
+            </svg>
+        </button>
 
         @if (session('cart_success') || session('success'))
             <div class="hidden" data-flash-message data-type="success" data-message="{{ session('cart_success') ?: session('success') }}"></div>

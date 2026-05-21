@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\Admin\HomeDisplayController;
 use App\Http\Controllers\Admin\SiteSettingController;
+use App\Http\Controllers\Admin\AuthController;
 use App\Http\Controllers\Frontend\CartController;
 use App\Http\Controllers\Frontend\CategoryController;
 use App\Http\Controllers\Frontend\CheckoutController;
@@ -31,9 +32,13 @@ Route::get('/catalog/{path?}', [CategoryController::class, 'show'])
     ->name('categories.show');
 Route::get('/products/{slug}', [ProductController::class, 'show'])->name('products.show');
 
-Route::get('/login', [App\Http\Controllers\Admin\AuthController::class, 'showLoginForm'])->name('login');
-Route::post('/login', [App\Http\Controllers\Admin\AuthController::class, 'login'])->name('login.submit');
-Route::post('/logout', [App\Http\Controllers\Admin\AuthController::class, 'logout'])->name('logout');
+Route::get('/login', [AuthController::class, 'showLoginForm'])->name('login');
+Route::post('/login', [AuthController::class, 'login'])->name('login.submit');
+Route::post('/logout', [AuthController::class, 'logout'])->name('logout');
+Route::get('/password/reset', [AuthController::class, 'showForgotPasswordForm'])->name('password.request');
+Route::post('/password/reset', [AuthController::class, 'sendResetLinkEmail'])->name('password.email');
+Route::get('/password/reset/{token}', [AuthController::class, 'showResetPasswordForm'])->name('password.reset');
+Route::post('/password/reset/{token}', [AuthController::class, 'resetPassword'])->name('password.update');
 
 Route::prefix('admin')->name('admin.')->group(function () {
     Route::middleware(['auth'])->group(function () {
