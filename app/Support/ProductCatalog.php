@@ -901,7 +901,7 @@ class ProductCatalog
     public function listingProducts(): array
     {
         if ($this->hasDatabaseProducts()) {
-            return Product::with(['brand', 'category.parent.parent', 'variants'])
+            return Product::with(['brand', 'category.parent.parent', 'variants', 'specifications'])
                 ->where('status', Product::STATUS_ACTIVE)
                 ->latest()
                 ->get()
@@ -1044,6 +1044,7 @@ class ProductCatalog
             'release_label' => $this->releaseLabel($slug),
             'image' => $product['image'],
             'benefits' => $product['benefits'],
+            'search_text' => implode(' ', array_map(fn($s) => ($s['label'] ?? '') . ' ' . ($s['value'] ?? ''), $product['technical_specs'] ?? [])) . ' ' . implode(' ', $product['highlights'] ?? []),
         ];
     }
 
@@ -1099,6 +1100,7 @@ class ProductCatalog
             'release_label' => optional($product->created_at)->format('m/Y') ?? '2026',
             'image' => $product->thumbnail ?: $this->sampleImage(),
             'benefits' => $product->highlights ?: ['Trả góp 0%', 'Bảo hành chính hãng', 'Hỗ trợ thu cũ đổi mới'],
+            'stock' => $variant?->stock ?? 0,
         ];
     }
 
@@ -1128,7 +1130,7 @@ class ProductCatalog
         return [
             ...$card,
             'sku' => $variant?->sku ?? 'N/A',
-            'status' => $product->is_preorder ? 'Đang nhận đặt trước' : ($variant && $variant->stock > 0 ? 'Còn hàng' : 'Liên hệ'),
+            'status' => $product->is_preorder ? 'Đang nhận đặt trước' : ($variant && $variant->stock > 0 ? 'Còn hàng' : 'Hết hàng'),
             'gallery' => $gallery,
             'highlights' => $product->highlights ?: [$product->summary ?: 'Sản phẩm chính hãng, đầy đủ chính sách bảo hành.'],
             'variants' => $this->variantOptions($product),
@@ -1166,6 +1168,7 @@ class ProductCatalog
             'series_label' => $breadcrumbs[1]['label'] ?? null,
             'model_slug' => $breadcrumbs[2]['slug'] ?? null,
             'model_label' => $breadcrumbs[2]['label'] ?? $product->name,
+            'search_text' => ($product->specifications ? $product->specifications->map(fn($s) => $s->name . ' ' . $s->value)->implode(' ') : '') . ' ' . ($product->highlights ? implode(' ', $product->highlights) : ''),
         ];
     }
 
@@ -1239,7 +1242,7 @@ class ProductCatalog
                 'old_price' => (float) $variant->price_original > $this->variantPrice($variant) ? $this->formatPrice((float) $variant->price_original) : '',
                 'discount' => $this->discountLabel((float) $variant->price_original, $this->variantPrice($variant)),
                 'stock' => $variant->stock,
-                'status' => $variant->stock > 0 ? 'Còn hàng' : 'Liên hệ',
+                'status' => $variant->stock > 0 ? 'Còn hàng' : 'Hết hàng',
                 'active' => $variant->id === $primary?->id,
             ])
             ->all();

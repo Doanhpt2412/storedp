@@ -43,6 +43,30 @@ class CartController extends Controller
             throw new NotFoundHttpException();
         }
 
+        $selectedVariant = null;
+        if (!empty($product['variant_matrix'])) {
+            $selectedVariant = collect($product['variant_matrix'])->first(function ($v) use ($validated) {
+                return $v['sku'] === ($validated['sku'] ?? null) || ($v['storage'] === ($validated['storage'] ?? null) && $v['color'] === ($validated['color'] ?? null));
+            });
+        }
+
+        $isOutOfStock = false;
+        if ($selectedVariant && $selectedVariant['stock'] <= 0) {
+            $isOutOfStock = true;
+        } elseif (!$selectedVariant && isset($product['stock']) && $product['stock'] <= 0) {
+            $isOutOfStock = true;
+        }
+
+        if ($isOutOfStock) {
+            if ($request->wantsJson() || $request->ajax()) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Sản phẩm này đã hết hàng.',
+                ]);
+            }
+            return back()->with('error', 'Sản phẩm này đã hết hàng.');
+        }
+
         $cookie = $cart->add($product, (int) ($validated['quantity'] ?? 1), [
             'sku' => $validated['sku'] ?? null,
             'storage' => $validated['storage'] ?? null,

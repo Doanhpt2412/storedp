@@ -24,6 +24,24 @@ class CheckoutController extends Controller
             return redirect()->route('cart.index')->with('error', 'Giỏ hàng của bạn đang trống.');
         }
 
+        foreach ($cart->items() as $item) {
+            $productData = app(\App\Support\ProductCatalog::class)->find($item['slug']);
+            if (!$productData) {
+                return redirect()->route('cart.index')->with('error', 'Một số sản phẩm không còn tồn tại.');
+            }
+            $selectedVariant = null;
+            if (!empty($productData['variant_matrix'])) {
+                $selectedVariant = collect($productData['variant_matrix'])->first(function ($v) use ($item) {
+                    return $v['sku'] === ($item['sku'] ?? null) || ($v['storage'] === ($item['storage'] ?? null) && $v['color'] === ($item['color'] ?? null));
+                });
+            }
+            
+            $stock = $selectedVariant ? ($selectedVariant['stock'] ?? 0) : ($productData['stock'] ?? 0);
+            if ($stock < $item['quantity']) {
+                return redirect()->route('cart.index')->with('error', "Sản phẩm {$item['name']} hiện chỉ còn {$stock} sản phẩm (hoặc đã hết hàng). Vui lòng cập nhật giỏ hàng.");
+            }
+        }
+
         $cartSubtotal = $cart->subtotal();
         $appliedPromotion = $promotionCodeService->current($cartSubtotal);
 
@@ -84,6 +102,24 @@ class CheckoutController extends Controller
             return redirect()->route('cart.index')->with('error', 'Giỏ hàng của bạn đang trống.');
         }
 
+        foreach ($cart->items() as $item) {
+            $productData = app(\App\Support\ProductCatalog::class)->find($item['slug']);
+            if (!$productData) {
+                return redirect()->route('cart.index')->with('error', 'Một số sản phẩm không còn tồn tại.');
+            }
+            $selectedVariant = null;
+            if (!empty($productData['variant_matrix'])) {
+                $selectedVariant = collect($productData['variant_matrix'])->first(function ($v) use ($item) {
+                    return $v['sku'] === ($item['sku'] ?? null) || ($v['storage'] === ($item['storage'] ?? null) && $v['color'] === ($item['color'] ?? null));
+                });
+            }
+            
+            $stock = $selectedVariant ? ($selectedVariant['stock'] ?? 0) : ($productData['stock'] ?? 0);
+            if ($stock < $item['quantity']) {
+                return redirect()->route('cart.index')->with('error', "Sản phẩm {$item['name']} hiện chỉ còn {$stock} sản phẩm (hoặc đã hết hàng). Vui lòng cập nhật giỏ hàng.");
+            }
+        }
+
         $validated = $request->validate([
             'customer_name' => ['required', 'string', 'max:255'],
             'customer_phone' => ['required', 'string', 'max:20'],
@@ -138,6 +174,13 @@ class CheckoutController extends Controller
                     'quantity' => $item['quantity'],
                     'total' => $item['price_value'] * $item['quantity'],
                 ]);
+
+                if (!empty($item['sku'])) {
+                    $variant = \App\Models\ProductVariant::where('sku', $item['sku'])->first();
+                    if ($variant) {
+                        $variant->decrement('stock', $item['quantity']);
+                    }
+                }
             }
 
             if (! empty($appliedPromotion['promotion'])) {

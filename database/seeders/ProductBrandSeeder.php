@@ -23,6 +23,8 @@ class ProductBrandSeeder extends Seeder
             ['name' => 'Nokia', 'slug' => 'nokia', 'order' => 4],
             ['name' => 'TCL', 'slug' => 'tcl', 'order' => 5],
             ['name' => 'Tecno', 'slug' => 'tecno', 'order' => 6],
+            ['name' => 'Sony', 'slug' => 'sony', 'order' => 7],
+            ['name' => 'Anker', 'slug' => 'anker', 'order' => 8],
         ];
 
         foreach ($brands as $brand) {

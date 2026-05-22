@@ -87,18 +87,24 @@
             <a href="{{ route('products.show', $product['slug']) }}" class="col-span-2 inline-flex items-center justify-center rounded-xl border border-gray-200 bg-white px-3 py-2.5 text-xs font-semibold text-gray-700 hover:border-orange-300 hover:text-orange-600 transition">
                 Xem chi tiết
             </a>
-            <form action="{{ route('cart.store') }}" method="post" data-cart-form class="col-span-1">
-                @csrf
-                <input type="hidden" name="slug" value="{{ $product['slug'] }}">
-                <input type="hidden" name="quantity" value="1">
-                <button type="submit" class="w-full inline-flex items-center justify-center rounded-xl bg-orange-500 px-3 py-2.5 text-white hover:bg-orange-600 transition" aria-label="Thêm vào giỏ">
-                    <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-                        <circle cx="8" cy="21" r="1"/>
-                        <circle cx="19" cy="21" r="1"/>
-                        <path d="M2.05 2.05h2l2.66 12.42a2 2 0 0 0 2 1.58h9.78a2 2 0 0 0 1.95-1.57l1.65-7.43H5.12"/>
-                    </svg>
+            @if(isset($product['stock']) && $product['stock'] <= 0)
+                <button type="button" class="col-span-1 w-full inline-flex items-center justify-center rounded-xl bg-gray-200 px-3 py-2.5 text-gray-500 cursor-not-allowed transition" disabled aria-label="Hết hàng">
+                    <span class="text-xs font-semibold">Hết hàng</span>
                 </button>
-            </form>
+            @else
+                <form action="{{ route('cart.store') }}" method="post" data-cart-form class="col-span-1">
+                    @csrf
+                    <input type="hidden" name="slug" value="{{ $product['slug'] }}">
+                    <input type="hidden" name="quantity" value="1">
+                    <button type="submit" class="w-full inline-flex items-center justify-center rounded-xl bg-orange-500 px-3 py-2.5 text-white hover:bg-orange-600 transition" aria-label="Thêm vào giỏ">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                            <circle cx="8" cy="21" r="1"/>
+                            <circle cx="19" cy="21" r="1"/>
+                            <path d="M2.05 2.05h2l2.66 12.42a2 2 0 0 0 2 1.58h9.78a2 2 0 0 0 1.95-1.57l1.65-7.43H5.12"/>
+                        </svg>
+                    </button>
+                </form>
+            @endif
         </div>
     </div>
 </article>

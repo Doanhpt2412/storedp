@@ -18,9 +18,11 @@ class SearchController extends Controller
         $query = trim((string) ($request->query('s') ?? $request->query('q') ?? ''));
         $normalizedQuery = Str::lower(Str::ascii($query));
 
+        $queryWords = array_filter(explode(' ', $normalizedQuery), fn($w) => trim($w) !== '');
+
         $baseProducts = collect($catalog->listingProducts())
-            ->filter(function (array $product) use ($normalizedQuery): bool {
-                if ($normalizedQuery === '') {
+            ->filter(function (array $product) use ($queryWords): bool {
+                if (empty($queryWords)) {
                     return false;
                 }
 
@@ -34,9 +36,16 @@ class SearchController extends Controller
                     $product['model_label'] ?? '',
                     $product['storage'] ?? '',
                     $product['color'] ?? '',
+                    $product['search_text'] ?? '',
                 ])));
 
-                return str_contains($haystack, $normalizedQuery);
+                foreach ($queryWords as $word) {
+                    if (!str_contains($haystack, $word)) {
+                        return false;
+                    }
+                }
+
+                return true;
             })
             ->values();
 

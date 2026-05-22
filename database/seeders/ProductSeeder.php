@@ -62,6 +62,7 @@ class ProductSeeder extends Seeder
             ...$this->macMiniProducts(),
             ...$this->imacProducts(),
             ...$this->wearableAndAudioProducts(),
+            ...$this->accessoriesProducts(),
         ];
     }
 
@@ -1070,6 +1071,132 @@ class ProductSeeder extends Seeder
         ];
     }
 
+    private function accessoriesProducts(): array
+    {
+        return [
+            $this->makeAccessoryProduct(
+                'Sạc không dây Apple MagSafe Charger',
+                'sac-khong-day-apple-magsafe-charger',
+                'apple',
+                'phu-kien',
+                'Trắng',
+                '#ffffff',
+                1190000,
+                990000,
+                50,
+                'Sạc không dây từ tính chính hãng Apple, hỗ trợ sạc nhanh 15W cho các dòng iPhone 12 trở lên.',
+                [
+                    'Thiết kế từ tính hít chặt vào mặt lưng iPhone.',
+                    'Sạc nhanh không dây chuẩn Qi và MagSafe tới 15W.',
+                    'Thiết kế nhỏ gọn, tinh tế và dễ mang theo.',
+                ],
+                $this->accessorySpecs('Apple', 'Sạc không dây', '15W Max', 'iPhone, AirPods'),
+                [
+                    'https://store.storeimages.cdn-apple.com/8756/as-images.apple.com/is/MHXH3?wid=1144&hei=1144&fmt=jpeg',
+                    'https://store.storeimages.cdn-apple.com/8756/as-images.apple.com/is/MHXH3_AV1?wid=1144&hei=1144&fmt=jpeg',
+                    'https://store.storeimages.cdn-apple.com/8756/as-images.apple.com/is/MHXH3_AV2?wid=1144&hei=1144&fmt=jpeg',
+                    'https://store.storeimages.cdn-apple.com/8756/as-images.apple.com/is/MHXH3_AV3?wid=1144&hei=1144&fmt=jpeg'
+                ]
+            ),
+            $this->makeAccessoryProduct(
+                'Tai nghe không dây Samsung Galaxy Buds2 Pro',
+                'tai-nghe-khong-day-samsung-galaxy-buds2-pro',
+                'samsung',
+                'phu-kien',
+                'Đen Graphite',
+                '#333333',
+                4990000,
+                3990000,
+                30,
+                'Tai nghe True Wireless từ Samsung hỗ trợ âm thanh Hi-Fi 24-bit và chống ồn chủ động (ANC).',
+                [
+                    'Âm thanh Hi-Fi 24-bit mang lại trải nghiệm cực kỳ chi tiết.',
+                    'Chống ồn chủ động thông minh giúp loại bỏ tạp âm hiệu quả.',
+                    'Thiết kế nhỏ gọn hoàn hảo cho việc tập luyện.',
+                ],
+                $this->accessorySpecs('Samsung', 'Tai nghe True Wireless ANC', 'USB-C', 'Android, iOS'),
+                [
+                    'https://images.samsung.com/is/image/samsung/p6pim/vn/sm-r510nzaaxxv/gallery/vn-galaxy-buds2-pro-r510-sm-r510nzaaxxv-533192305',
+                    'https://images.samsung.com/is/image/samsung/p6pim/vn/sm-r510nzaaxxv/gallery/vn-galaxy-buds2-pro-r510-sm-r510nzaaxxv-533192304',
+                    'https://images.samsung.com/is/image/samsung/p6pim/vn/sm-r510nzaaxxv/gallery/vn-galaxy-buds2-pro-r510-sm-r510nzaaxxv-533192308',
+                    'https://images.samsung.com/is/image/samsung/p6pim/vn/sm-r510nzaaxxv/gallery/vn-galaxy-buds2-pro-r510-sm-r510nzaaxxv-533192306'
+                ]
+            ),
+            $this->makeAccessoryProduct(
+                'Tai nghe không dây Sony WF-1000XM5',
+                'tai-nghe-khong-day-sony-wf-1000xm5',
+                'sony',
+                'phu-kien',
+                'Đen',
+                '#000000',
+                6990000,
+                6490000,
+                20,
+                'Tai nghe In-ear chống ồn hàng đầu thị trường của Sony với chất âm Hi-Res tuyệt đỉnh.',
+                [
+                    'Công nghệ chống ồn thế hệ mới từ Sony.',
+                    'Driver âm thanh độc quyền mang đến chất âm vô cùng chi tiết.',
+                    'Pin dùng đến 8 giờ kèm hộp sạc lên 24 giờ.',
+                ],
+                $this->accessorySpecs('Sony', 'Tai nghe True Wireless ANC', 'USB-C', 'Android, iOS'),
+                [
+                    'https://www.sony.com.vn/image/5d02da5df552836db894cead8a68f5f3?fmt=pjpeg&wid=1014&hei=396&bgcolor=F1F5F9&bgc=F1F5F9',
+                    'https://www.sony.com.vn/image/44917454bf59663ea534c038ff11e5dc?fmt=pjpeg&wid=1014&hei=396&bgcolor=F1F5F9&bgc=F1F5F9',
+                    'https://www.sony.com.vn/image/ac5fa96c21e64627063fbc957dd8d0f1?fmt=pjpeg&wid=1014&hei=396&bgcolor=F1F5F9&bgc=F1F5F9',
+                    'https://www.sony.com.vn/image/2242125f190e23e20bfd75574c83fcff?fmt=pjpeg&wid=1014&hei=396&bgcolor=F1F5F9&bgc=F1F5F9'
+                ]
+            ),
+            $this->makeAccessoryProduct(
+                'Tai nghe chụp tai Sony WH-1000XM5',
+                'tai-nghe-chup-tai-sony-wh-1000xm5',
+                'sony',
+                'phu-kien',
+                'Bạc',
+                '#dcdcdc',
+                7990000,
+                6990000,
+                20,
+                'Tai nghe Over-ear chống ồn hàng đầu thị trường của Sony với thiết kế hiện đại và chất âm Hi-Res.',
+                [
+                    'Công nghệ chống ồn chủ động kép với 8 micro.',
+                    'Thời lượng pin khủng lên đến 30 giờ hỗ trợ sạc nhanh.',
+                    'Thiết kế mới nhẹ hơn, đeo thoải mái hơn.',
+                ],
+                $this->accessorySpecs('Sony', 'Tai nghe Over-ear ANC', 'USB-C', 'Mac, Windows, Android, iOS'),
+                [
+                    'https://www.sony.com.vn/image/6145c1d32e6ac8e63a46c912dc33c5bb?fmt=pjpeg&wid=1014&hei=396&bgcolor=F1F5F9&bgc=F1F5F9',
+                    'https://www.sony.com.vn/image/5d105260dd393eb536e14713e778a48d?fmt=pjpeg&wid=1014&hei=396&bgcolor=F1F5F9&bgc=F1F5F9',
+                    'https://www.sony.com.vn/image/3bfae6fdeff22a101f3cf9f14debc81c?fmt=pjpeg&wid=1014&hei=396&bgcolor=F1F5F9&bgc=F1F5F9',
+                    'https://www.sony.com.vn/image/9a2ccb0ffb33907eb6b783ab60eb76ff?fmt=pjpeg&wid=1014&hei=396&bgcolor=F1F5F9&bgc=F1F5F9'
+                ]
+            ),
+            $this->makeAccessoryProduct(
+                'Sạc không dây Anker PowerWave Pad',
+                'sac-khong-day-anker-powerwave-pad',
+                'anker',
+                'phu-kien',
+                'Đen',
+                '#000000',
+                450000,
+                350000,
+                100,
+                'Đế sạc không dây tiêu chuẩn Qi từ Anker, tương thích rộng rãi với nhiều thiết bị smartphone.',
+                [
+                    'Sạc không dây chuẩn Qi hỗ trợ công suất lên đến 10W.',
+                    'Bảo vệ quá nhiệt và kiểm soát nhiệt độ thông minh.',
+                    'Thiết kế mỏng nhẹ, đèn LED hiển thị trạng thái sạc.',
+                ],
+                $this->accessorySpecs('Anker', 'Đế sạc không dây', '10W Max', 'Thiết bị hỗ trợ chuẩn Qi'),
+                [
+                    'https://cdn.shopify.com/s/files/1/0493/9834/9974/products/A2503011_TD01_1024x1024.jpg',
+                    'https://cdn.shopify.com/s/files/1/0493/9834/9974/products/A2503011_TD02_1024x1024.jpg',
+                    'https://cdn.shopify.com/s/files/1/0493/9834/9974/products/A2503011_TD03_1024x1024.jpg',
+                    'https://cdn.shopify.com/s/files/1/0493/9834/9974/products/A2503011_TD04_1024x1024.jpg'
+                ]
+            ),
+        ];
+    }
+
     private function makePhoneProduct(
         string $name,
         string $slug,
@@ -1397,6 +1524,66 @@ class ProductSeeder extends Seeder
             ['group_name' => 'Pin & Sac', 'name' => 'Cong sac', 'value' => $charging],
             ['group_name' => 'Pin & Sac', 'name' => 'Thoi luong pin', 'value' => $battery],
             ['group_name' => 'Tuong thich', 'name' => 'He sinh thai', 'value' => 'iPhone, iPad, Mac, Apple Watch'],
+        ];
+    }
+
+    private function makeAccessoryProduct(
+        string $name,
+        string $slug,
+        string $brand,
+        string $category,
+        string $colorName,
+        string $colorCode,
+        int $priceOriginal,
+        int $priceSale,
+        int $stock,
+        string $summary,
+        array $sellingPoints,
+        array $specifications,
+        array $images
+    ): array {
+        $highlights = [
+            'Bảo hành chính hãng 12 tháng.',
+            'Hỗ trợ đổi trả 1-1 trong 15 ngày nếu có lỗi.',
+            'Giao hàng nhanh chóng toàn quốc.',
+        ];
+
+        return [
+            'name' => $name,
+            'slug' => $slug,
+            'brand' => $brand,
+            'category' => $category,
+            'thumbnail' => $images[0],
+            'images' => $images,
+            'warranty_policy' => 'Bảo hành chính hãng 12 tháng.',
+            'return_policy' => 'Đổi trả trong 15 ngày nếu phát sinh lỗi do nhà sản xuất.',
+            'highlights' => $highlights,
+            'summary' => $summary,
+            'description' => $this->descriptionHtml($name, $summary, $sellingPoints, $images),
+            'status' => Product::STATUS_ACTIVE,
+            'is_preorder' => false,
+            'variants' => [
+                [
+                    'sku' => strtoupper(Str::slug($slug, '')),
+                    'storage' => null,
+                    'color_name' => $colorName,
+                    'color_code' => $colorCode,
+                    'price_original' => $priceOriginal,
+                    'price_sale' => $priceSale,
+                    'stock' => $stock,
+                ],
+            ],
+            'specifications' => $specifications,
+        ];
+    }
+
+    private function accessorySpecs(string $brand, string $type, string $power, string $compatibility): array
+    {
+        return [
+            ['group_name' => 'Thông tin chung', 'name' => 'Thương hiệu', 'value' => $brand],
+            ['group_name' => 'Thông số', 'name' => 'Loại phụ kiện', 'value' => $type],
+            ['group_name' => 'Thông số', 'name' => 'Công suất/Pin', 'value' => $power],
+            ['group_name' => 'Tương thích', 'name' => 'Thiết bị hỗ trợ', 'value' => $compatibility],
         ];
     }
 }

@@ -277,6 +277,19 @@ variantPickers.forEach((picker) => {
                 const numericPrice = Number(String(variant.price || '').replace(/[^\d]/g, ''));
                 priceValueInput.value = Number.isNaN(numericPrice) ? 0 : numericPrice;
             }
+
+            const submitBtn = cartForm.querySelector('button[type="submit"]');
+            if (submitBtn) {
+                const isOutOfStock = Number(variant.stock || 0) <= 0;
+                submitBtn.disabled = isOutOfStock;
+                submitBtn.style.opacity = isOutOfStock ? '0.5' : '';
+                submitBtn.style.cursor = isOutOfStock ? 'not-allowed' : '';
+
+                const textSpan = submitBtn.querySelector('span.text-base');
+                if (textSpan) {
+                    textSpan.textContent = isOutOfStock ? 'Hết hàng' : 'Mua ngay';
+                }
+            }
         });
 
         setButtonState(storageButtons, 'data-storage-option', variant.storage || '');
