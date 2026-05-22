@@ -79,7 +79,7 @@
                                 href="{{ $banner['url'] ?? '#' }}"
                                 class="mini-banner{{ $loop->odd ? ' mini-banner--gold' : ' mini-banner--blue' }}"
                                 @if (!empty($banner['image_url']))
-                                    style="background-image: url('{{ $banner['image_url'] }}')"
+                                    style="background-image: url('{{ $banner['image_url'] }}'); background-size: cover; background-position: center;"
                                 @endif
                             >
                                 <span>{{ $banner['eyebrow'] ?? '' }}</span>

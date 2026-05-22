@@ -1414,6 +1414,59 @@ class ProductSeeder extends Seeder
 
     private function imageSet(string $name, string $accent): array
     {
+        $nameLower = strtolower($name);
+        $images = [];
+
+        if (str_contains($nameLower, 'iphone 16 pro max')) {
+            $images[] = 'https://cdn2.cellphones.com.vn/insecure/rs:fill:0:358/q:90/plain/https://cellphones.com.vn/media/catalog/product/i/p/iphone-16-pro-max.png';
+        } elseif (str_contains($nameLower, 'iphone 15 pro')) {
+            $images[] = 'https://images.unsplash.com/photo-1510557880182-3d4d3cba35a5?q=80&w=1000&auto=format&fit=crop';
+        } elseif (str_contains($nameLower, 'iphone 15')) {
+            if (str_contains($nameLower, 'blue')) $images[] = 'https://store.storeimages.cdn-apple.com/8756/as-images.apple.com/is/iphone-15-blue-select-202309?wid=940&hei=1112&fmt=png-alpha';
+            elseif (str_contains($nameLower, 'pink')) $images[] = 'https://store.storeimages.cdn-apple.com/8756/as-images.apple.com/is/iphone-15-pink-select-202309?wid=940&hei=1112&fmt=png-alpha';
+            elseif (str_contains($nameLower, 'yellow')) $images[] = 'https://store.storeimages.cdn-apple.com/8756/as-images.apple.com/is/iphone-15-yellow-select-202309?wid=940&hei=1112&fmt=png-alpha';
+            elseif (str_contains($nameLower, 'green')) $images[] = 'https://store.storeimages.cdn-apple.com/8756/as-images.apple.com/is/iphone-15-green-select-202309?wid=940&hei=1112&fmt=png-alpha';
+            else $images[] = 'https://store.storeimages.cdn-apple.com/8756/as-images.apple.com/is/iphone-15-black-select-202309?wid=940&hei=1112&fmt=png-alpha';
+        } elseif (str_contains($nameLower, 'galaxy s25')) {
+            $images[] = 'https://images.unsplash.com/photo-1610945265064-0e34e5519bbf?q=80&w=1000&auto=format&fit=crop';
+        } elseif (str_contains($nameLower, 'xiaomi 15')) {
+            $images[] = 'https://images.unsplash.com/photo-1610945265064-0e34e5519bbf?q=80&w=1000&auto=format&fit=crop';
+        } elseif (str_contains($nameLower, 'macbook air')) {
+            if (str_contains($nameLower, 'midnight')) $images[] = 'https://store.storeimages.cdn-apple.com/8756/as-images.apple.com/is/mba13-midnight-select-202402?wid=904&hei=840&fmt=jpeg';
+            elseif (str_contains($nameLower, 'starlight')) $images[] = 'https://store.storeimages.cdn-apple.com/8756/as-images.apple.com/is/mba13-starlight-select-202402?wid=904&hei=840&fmt=jpeg';
+            elseif (str_contains($nameLower, 'space gray')) $images[] = 'https://store.storeimages.cdn-apple.com/8756/as-images.apple.com/is/mba13-spacegray-select-202402?wid=904&hei=840&fmt=jpeg';
+            else $images[] = 'https://store.storeimages.cdn-apple.com/8756/as-images.apple.com/is/mba13-silver-select-202402?wid=904&hei=840&fmt=jpeg';
+        } elseif (str_contains($nameLower, 'macbook pro')) {
+            if (str_contains($nameLower, 'space black')) $images[] = 'https://store.storeimages.cdn-apple.com/8756/as-images.apple.com/is/mbp14-spaceblack-select-202410?wid=904&hei=840&fmt=jpeg';
+            else $images[] = 'https://store.storeimages.cdn-apple.com/8756/as-images.apple.com/is/mbp14-silver-select-202410?wid=904&hei=840&fmt=jpeg';
+        } elseif (str_contains($nameLower, 'mac mini')) {
+            $images[] = 'https://store.storeimages.cdn-apple.com/8756/as-images.apple.com/is/mac-mini-hero-202410?wid=904&hei=840&fmt=jpeg';
+        } elseif (str_contains($nameLower, 'imac')) {
+            if (str_contains($nameLower, 'blue')) $images[] = 'https://store.storeimages.cdn-apple.com/8756/as-images.apple.com/is/imac-24-blue-selection-hero-202310?wid=904&hei=840&fmt=jpeg';
+            elseif (str_contains($nameLower, 'green')) $images[] = 'https://store.storeimages.cdn-apple.com/8756/as-images.apple.com/is/imac-24-green-selection-hero-202310?wid=904&hei=840&fmt=jpeg';
+            elseif (str_contains($nameLower, 'pink')) $images[] = 'https://store.storeimages.cdn-apple.com/8756/as-images.apple.com/is/imac-24-pink-selection-hero-202310?wid=904&hei=840&fmt=jpeg';
+            elseif (str_contains($nameLower, 'yellow')) $images[] = 'https://store.storeimages.cdn-apple.com/8756/as-images.apple.com/is/imac-24-yellow-selection-hero-202310?wid=904&hei=840&fmt=jpeg';
+            else $images[] = 'https://store.storeimages.cdn-apple.com/8756/as-images.apple.com/is/imac-24-silver-selection-hero-202310?wid=904&hei=840&fmt=jpeg';
+        } elseif (str_contains($nameLower, 'watch ultra')) {
+            $images[] = 'https://images.unsplash.com/photo-1434493789847-2f02dc6ca35d?q=80&w=1000&auto=format&fit=crop';
+        } elseif (str_contains($nameLower, 'watch series')) {
+            $images[] = 'https://images.unsplash.com/photo-1434493789847-2f02dc6ca35d?q=80&w=1000&auto=format&fit=crop';
+        } elseif (str_contains($nameLower, 'airpods pro')) {
+            $images[] = 'https://store.storeimages.cdn-apple.com/8756/as-images.apple.com/is/MQD83?wid=1144&hei=1144&fmt=jpeg';
+        } elseif (str_contains($nameLower, 'airpods')) {
+            $images[] = 'https://store.storeimages.cdn-apple.com/8756/as-images.apple.com/is/airpods-4-anc-select-202409?wid=1144&hei=1144&fmt=jpeg';
+        }
+
+        if (!empty($images)) {
+            $baseImage = $images[0];
+            return [
+                $baseImage,
+                $baseImage,
+                $baseImage,
+                $baseImage,
+            ];
+        }
+
         $query = rawurlencode($name);
         $accentHex = ltrim($accent, '#') ?: '1f2937';
 
