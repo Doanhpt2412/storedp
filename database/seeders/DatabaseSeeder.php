@@ -49,6 +49,7 @@ class DatabaseSeeder extends Seeder
         // Danh mục sản phẩm
         $this->call(ProductCategorySeeder::class);
         $this->call(ProductBrandSeeder::class);
+        $this->call(ProductSeeder::class);
         $this->call(PostCategorySeeder::class);
         $this->call(PostSeeder::class);
         $this->call(SiteSettingsSeeder::class);

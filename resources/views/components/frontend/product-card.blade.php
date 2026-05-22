@@ -3,13 +3,14 @@
 @php
     $discount = $product['discount'] ?? '';
     $storageOptions = ['128GB', '256GB', '512GB', '1TB'];
-    $currentStorage = $product['storage'] ?? '128GB';
+    $currentStorage = $product['storage'] ?? '';
     $benefits = collect($product['benefits'] ?? [])->filter()->take(3)->values();
 
     if (str_contains($currentStorage, '256')) $currentStorage = '256GB';
-    if (str_contains($currentStorage, '512')) $currentStorage = '512GB';
-    if (str_contains($currentStorage, '128')) $currentStorage = '128GB';
-    if (str_contains(strtolower($currentStorage), '1t')) $currentStorage = '1TB';
+    elseif (str_contains($currentStorage, '512')) $currentStorage = '512GB';
+    elseif (str_contains($currentStorage, '128')) $currentStorage = '128GB';
+    elseif (str_contains(strtolower($currentStorage), '1t')) $currentStorage = '1TB';
+    else $currentStorage = null;
 @endphp
 
 <article class="bg-white rounded-2xl shadow-sm border border-gray-100 hover:shadow-md transition-all duration-300 relative overflow-hidden flex flex-col justify-between h-full p-4 group">
@@ -39,14 +40,16 @@
                 </a>
             </h3>
 
-            <div class="flex flex-wrap gap-1.5 mt-3">
-                @foreach ($storageOptions as $option)
-                    @php $isActive = $option === $currentStorage; @endphp
-                    <span class="text-[10px] px-2 py-1 rounded border font-semibold transition {{ $isActive ? 'bg-orange-500 border-orange-500 text-white' : 'bg-gray-50 border-gray-200 text-gray-500' }}">
-                        {{ $option }}
-                    </span>
-                @endforeach
-            </div>
+            @if ($currentStorage)
+                <div class="flex flex-wrap gap-1.5 mt-3">
+                    @foreach ($storageOptions as $option)
+                        @php $isActive = $option === $currentStorage; @endphp
+                        <span class="text-[10px] px-2 py-1 rounded border font-semibold transition {{ $isActive ? 'bg-orange-500 border-orange-500 text-white' : 'bg-gray-50 border-gray-200 text-gray-500' }}">
+                            {{ $option }}
+                        </span>
+                    @endforeach
+                </div>
+            @endif
 
             <div class="flex items-baseline gap-2 mt-3">
                 <strong class="text-red-600 text-base font-extrabold">{{ $product['price'] }}</strong>

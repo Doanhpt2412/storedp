@@ -8,6 +8,7 @@ use App\Models\ProductCategory;
 use App\Support\ProductCatalog;
 use Illuminate\Contracts\View\View;
 use Illuminate\Http\Request;
+use Illuminate\Support\Collection;
 use Illuminate\Support\Str;
 
 class SearchController extends Controller
@@ -17,7 +18,7 @@ class SearchController extends Controller
         $query = trim((string) ($request->query('s') ?? $request->query('q') ?? ''));
         $normalizedQuery = Str::lower(Str::ascii($query));
 
-        $products = collect($catalog->listingProducts())
+        $baseProducts = collect($catalog->listingProducts())
             ->filter(function (array $product) use ($normalizedQuery): bool {
                 if ($normalizedQuery === '') {
                     return false;
@@ -39,6 +40,9 @@ class SearchController extends Controller
             })
             ->values();
 
+        $filters = $this->buildFilters($baseProducts);
+        $products = $this->applyFilters($baseProducts, $request)->values();
+
         $categories = $this->matchedCategories($normalizedQuery, $catalog);
         $posts = $this->matchedPosts($normalizedQuery);
 
@@ -46,10 +50,81 @@ class SearchController extends Controller
             'navCategories' => $catalog->navCategories(),
             'query' => $query,
             'products' => $products->all(),
+            'filters' => $filters,
             'categories' => $categories,
             'posts' => $posts,
             'totalResults' => $products->count() + count($categories) + count($posts),
+            'selectedFilters' => [
+                'brand' => $request->string('brand')->toString(),
+                'line' => $request->string('line')->toString(),
+                'series' => $request->string('series')->toString(),
+                'price' => $request->string('price')->toString(),
+                'sort' => $request->string('sort')->toString(),
+            ],
         ]);
+    }
+
+    private function applyFilters(Collection $products, Request $request): Collection
+    {
+        $brand = $request->string('brand')->toString();
+        $line = $request->string('line')->toString();
+        $series = $request->string('series')->toString();
+        $price = $request->string('price')->toString();
+        $sort = $request->string('sort')->toString();
+
+        $filtered = $products->filter(function (array $product) use ($brand, $line, $series, $price): bool {
+            if ($brand !== '' && ($product['brand_slug'] ?? '') !== $brand) {
+                return false;
+            }
+
+            if ($line !== '' && ($product['line_slug'] ?? '') !== $line) {
+                return false;
+            }
+
+            if ($series !== '' && ($product['series_slug'] ?? '') !== $series) {
+                return false;
+            }
+
+            return match ($price) {
+                'under-20' => ($product['price_value'] ?? 0) < 20000000,
+                '20-30' => ($product['price_value'] ?? 0) >= 20000000 && ($product['price_value'] ?? 0) <= 30000000,
+                'over-30' => ($product['price_value'] ?? 0) > 30000000,
+                default => true,
+            };
+        });
+
+        return match ($sort) {
+            'price-asc' => $filtered->sortBy('price_value'),
+            'price-desc' => $filtered->sortByDesc('price_value'),
+            'name-asc' => $filtered->sortBy('name'),
+            default => $filtered,
+        };
+    }
+
+    private function buildFilters(Collection $products): array
+    {
+        $uniqueOptions = function (string $slugField, string $labelField) use ($products): array {
+            return $products
+                ->map(fn (array $product) => [
+                    'slug' => $product[$slugField] ?? null,
+                    'label' => $product[$labelField] ?? null,
+                ])
+                ->filter(fn (array $item) => filled($item['slug']) && filled($item['label']))
+                ->unique('slug')
+                ->values()
+                ->all();
+        };
+
+        return [
+            'brands' => $uniqueOptions('brand_slug', 'brand_label'),
+            'lines' => $uniqueOptions('line_slug', 'line_label'),
+            'series' => $uniqueOptions('series_slug', 'series_label'),
+            'prices' => [
+                ['slug' => 'under-20', 'label' => 'Dưới 20 triệu'],
+                ['slug' => '20-30', 'label' => 'Từ 20 đến 30 triệu'],
+                ['slug' => 'over-30', 'label' => 'Trên 30 triệu'],
+            ],
+        ];
     }
 
     private function matchedCategories(string $normalizedQuery, ProductCatalog $catalog): array

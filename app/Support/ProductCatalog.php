@@ -76,6 +76,24 @@ class ProductCatalog
         ]);
     }
 
+    public function categoryBanners(): array
+    {
+        return app(SiteSettings::class)->group('category_banners', [
+            [
+                'eyebrow' => 'Pre-order now',
+                'title' => 'Flagship moi va nhieu uu dai dat truoc',
+                'url' => route('search', ['q' => 'flagship']),
+                'image_url' => null,
+            ],
+            [
+                'eyebrow' => 'StoreDP Special Offer',
+                'title' => 'Mua iPhone, MacBook va phu kien voi tra gop 0%',
+                'url' => route('checkout.index'),
+                'image_url' => null,
+            ],
+        ]);
+    }
+
     public function featuredCategories(): array
     {
         try {

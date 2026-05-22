@@ -28,6 +28,10 @@ class Order extends Model
         'customer_address',
         'customer_note',
         'order_status',
+        'promotion_code',
+        'promotion_name',
+        'discount_percentage',
+        'discount_amount',
         'subtotal',
         'total',
     ];

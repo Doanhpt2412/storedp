@@ -56,6 +56,7 @@ class CategoryController extends Controller
             'filters' => $filters,
             'brands' => $brands,
             'products' => $products->values()->all(),
+            'categoryBanners' => $catalog->categoryBanners(),
             'query' => (string) $request->string('q'),
             'selectedFilters' => [
                 'brand' => ! empty($currentNode['is_brand']) ? $currentNode['slug'] : $request->string('brand')->toString(),

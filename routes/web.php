@@ -19,6 +19,8 @@ Route::patch('/gio-hang/{lineId}', [CartController::class, 'update'])->name('car
 Route::delete('/gio-hang/{lineId}', [CartController::class, 'destroy'])->name('cart.destroy');
 
 Route::get('/dat-hang', [CheckoutController::class, 'index'])->name('checkout.index');
+Route::post('/dat-hang/ma-khuyen-mai', [CheckoutController::class, 'applyPromotion'])->name('checkout.promotion.apply');
+Route::delete('/dat-hang/ma-khuyen-mai', [CheckoutController::class, 'removePromotion'])->name('checkout.promotion.remove');
 Route::post('/dat-hang', [CheckoutController::class, 'store'])->name('checkout.store');
 Route::get('/dat-hang/thanh-cong/{order_code}', [CheckoutController::class, 'success'])->name('checkout.success');
 Route::get('/tra-cuu-don-hang', [CheckoutController::class, 'search'])->name('checkout.search');
@@ -52,6 +54,7 @@ Route::prefix('admin')->name('admin.')->group(function () {
         Route::resource('product-categories', App\Http\Controllers\Admin\ProductCategoryController::class);
         Route::resource('product-brands', App\Http\Controllers\Admin\ProductBrandController::class);
         Route::resource('products', App\Http\Controllers\Admin\ProductController::class)->except(['show']);
+        Route::resource('promotion-codes', App\Http\Controllers\Admin\PromotionCodeController::class)->except(['show']);
 
         Route::get('orders', [App\Http\Controllers\Admin\OrderController::class, 'index'])->name('orders.index');
         Route::get('orders/{order}', [App\Http\Controllers\Admin\OrderController::class, 'show'])->name('orders.show');

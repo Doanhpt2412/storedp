@@ -129,13 +129,14 @@
 
                     <form class="flex-1 max-w-[460px] relative" action="{{ route('search') }}" method="get">
                         <input
+                            id="input-search-header"
                             type="search"
                             name="s"
                             value="{{ request()->query('s') }}"
                             placeholder="Bạn cần tìm gì..."
                             class="w-full bg-white text-gray-800 placeholder-gray-400 rounded-full py-2 px-4 pr-10 outline-none text-sm shadow-inner focus:ring-2 focus:ring-yellow-300"
                         >
-                        <button type="submit" class="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600">
+                        <button type="submit" id="btn-search-header" class="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600">
                             <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path></svg>
                         </button>
                     </form>

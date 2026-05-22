@@ -20,6 +20,7 @@ class HomeDisplayController extends Controller
         return view('admin.home-display.edit', [
             'slides' => $settings->group('hero_slides', $this->defaultHeroSlides()),
             'banners' => $settings->group('home_banners', $this->defaultHomeBanners()),
+            'categoryBanners' => $settings->group('category_banners', $this->defaultCategoryBanners()),
         ]);
     }
 
@@ -48,10 +49,17 @@ class HomeDisplayController extends Controller
             'home_banners.*.url' => ['nullable', 'string', 'max:255'],
             'home_banners.*.image_url' => ['nullable', 'string', 'max:255'],
             'home_banners.*.image_file' => ['nullable', 'image', 'mimes:jpg,jpeg,png,webp', 'max:4096'],
+            'category_banners' => ['nullable', 'array'],
+            'category_banners.*.eyebrow' => ['nullable', 'string', 'max:120'],
+            'category_banners.*.title' => ['nullable', 'string', 'max:255'],
+            'category_banners.*.url' => ['nullable', 'string', 'max:255'],
+            'category_banners.*.image_url' => ['nullable', 'string', 'max:255'],
+            'category_banners.*.image_file' => ['nullable', 'image', 'mimes:jpg,jpeg,png,webp', 'max:4096'],
         ]);
 
         $existingSlides = $settings->group('hero_slides', $this->defaultHeroSlides());
         $existingBanners = $settings->group('home_banners', $this->defaultHomeBanners());
+        $existingCategoryBanners = $settings->group('category_banners', $this->defaultCategoryBanners());
 
         $slides = $this->normalizeHeroSlides(
             $data['hero_slides'] ?? [],
@@ -59,18 +67,27 @@ class HomeDisplayController extends Controller
             $existingSlides,
         );
 
-        $banners = $this->normalizeHomeBanners(
+        $banners = $this->normalizeBannerGroup(
             $data['home_banners'] ?? [],
             $request->file('home_banners', []),
             $existingBanners,
+            $this->defaultHomeBanners(),
+        );
+
+        $categoryBanners = $this->normalizeBannerGroup(
+            $data['category_banners'] ?? [],
+            $request->file('category_banners', []),
+            $existingCategoryBanners,
+            $this->defaultCategoryBanners(),
         );
 
         $settings->putMany([
             'hero_slides' => $slides,
             'home_banners' => $banners,
+            'category_banners' => $categoryBanners,
         ]);
 
-        return back()->with('success', 'Đã cập nhật slide và banner trang chủ.');
+        return back()->with('success', 'Da cap nhat slide va banner hien thi.');
     }
 
     private function normalizeHeroSlides(array $items, array $uploadedFiles, array $existingSlides): array
@@ -114,7 +131,7 @@ class HomeDisplayController extends Controller
         return $slides !== [] ? $slides : $this->defaultHeroSlides();
     }
 
-    private function normalizeHomeBanners(array $items, array $uploadedFiles, array $existingBanners): array
+    private function normalizeBannerGroup(array $items, array $uploadedFiles, array $existingBanners, array $fallback): array
     {
         $usedImages = [];
 
@@ -144,7 +161,7 @@ class HomeDisplayController extends Controller
 
         $this->deleteRemovedAssets($existingBanners, $usedImages);
 
-        return $banners !== [] ? $banners : $this->defaultHomeBanners();
+        return $banners !== [] ? $banners : $fallback;
     }
 
     private function deleteRemovedAssets(array $existingItems, array $usedImages): void
@@ -203,6 +220,20 @@ class HomeDisplayController extends Controller
                 'card_text' => 'Thiet ke mong nhe, pin ben va phu hop cho ca cong viec lan giai tri dai gio.',
                 'image_url' => null,
             ],
+            [
+                'eyebrow' => 'Am thanh & Wearables',
+                'title' => 'Dong ho, tai nghe va phu kien thong minh dang co nhieu qua tang.',
+                'description' => 'Danh cho nhom khach muon dong bo he sinh thai cong nghe voi nhung san pham de dung, dep va de tu van.',
+                'primary_label' => 'Xem phu kien',
+                'primary_url' => route('categories.show', ['path' => 'phu-kien']),
+                'secondary_label' => 'Xem am thanh',
+                'secondary_url' => route('categories.show', ['path' => 'am-thanh']),
+                'highlight_label' => 'Combo hot',
+                'highlight_text' => 'Tai nghe, dong ho va phu kien giao nhanh trong ngay',
+                'card_title' => 'Goi mua sam thong minh de chot don',
+                'card_text' => 'Noi dung duoc thiet lap de support giao dien trang chu va nhom tu van combo san pham.',
+                'image_url' => null,
+            ],
         ];
     }
 
@@ -219,6 +250,24 @@ class HomeDisplayController extends Controller
                 'eyebrow' => 'Thu cu doi moi',
                 'title' => 'Len doi nhanh, tro gia minh bach',
                 'url' => route('search', ['q' => 'thu cu doi moi']),
+                'image_url' => null,
+            ],
+        ];
+    }
+
+    private function defaultCategoryBanners(): array
+    {
+        return [
+            [
+                'eyebrow' => 'Pre-order now',
+                'title' => 'Flagship moi va nhieu uu dai dat truoc',
+                'url' => route('search', ['q' => 'flagship']),
+                'image_url' => null,
+            ],
+            [
+                'eyebrow' => 'StoreDP Special Offer',
+                'title' => 'Mua iPhone, MacBook va phu kien voi tra gop 0%',
+                'url' => route('checkout.index'),
                 'image_url' => null,
             ],
         ];

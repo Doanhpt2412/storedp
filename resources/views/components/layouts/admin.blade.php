@@ -1,9 +1,18 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="{{ str_replace('_', '-', app()->getLocale()) }}" class="light">
 <head>
+    @php
+        $site = array_merge([
+            'site_name' => config('app.name', 'StoreDP'),
+            'favicon_url' => null,
+        ], app(\App\Support\SiteSettings::class)->group('site'));
+    @endphp
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>{{ $title ?? 'Admin Dashboard' }} | {{ config('app.name', 'StoreDP') }}</title>
+    @if (!empty($site['favicon_url']))
+        <link rel="icon" href="{{ $site['favicon_url'] }}">
+    @endif
     @vite(['resources/css/app.css', 'resources/js/app.js'])
     <style>
         body {
@@ -40,6 +49,7 @@
                 </div>
                 <span>Store<span class="text-blue-500">Admin</span></span>
             </a>
+
         </div>
 
         <!-- Sidebar Navigation -->
@@ -127,7 +137,7 @@
             
             <a href="{{ route('admin.users.index') }}" class="flex items-center gap-3 px-3 py-2.5 rounded-lg {{ request()->routeIs('admin.users.*') ? 'text-white bg-blue-600 shadow-md shadow-blue-500/20' : 'text-slate-400 hover:text-slate-100 hover:bg-slate-800' }} transition-all">
                 <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M22 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
-                <span class="font-medium text-sm">Quản lý Tài khoản</span>
+                <span class="font-medium text-sm">Quản lý tài khoản</span>
             </a>
             @endcan
 
@@ -141,6 +151,10 @@
             <a href="{{ route('admin.settings.general.edit') }}" class="flex items-center gap-3 px-3 py-2.5 rounded-lg {{ request()->routeIs('admin.settings.*') ? 'text-white bg-blue-600 shadow-md shadow-blue-500/20' : 'text-slate-400 hover:text-slate-100 hover:bg-slate-800' }} transition-all">
                 <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
                 <span class="font-medium text-sm">Cài đặt hệ thống</span>
+            </a>
+            <a href="{{ route('admin.promotion-codes.index') }}" class="flex items-center gap-3 px-3 py-2.5 rounded-lg {{ request()->routeIs('admin.promotion-codes.*') ? 'text-white bg-blue-600 shadow-md shadow-blue-500/20' : 'text-slate-400 hover:text-slate-100 hover:bg-slate-800' }} transition-all">
+                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2 2 7l10 5 10-5-10-5Z"/><path d="m2 17 10 5 10-5"/><path d="m2 12 10 5 10-5"/></svg>
+                <span class="font-medium text-sm">Mã khuyến mãi</span>
             </a>
         </div>
 
@@ -169,7 +183,7 @@
                 
                 <div class="hidden sm:flex items-center bg-slate-100 rounded-lg px-3 py-2 w-64 border border-slate-200/60 focus-within:ring-2 focus-within:ring-blue-500/20 focus-within:border-blue-500 transition-all">
                     <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="text-slate-400"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/></svg>
-                    <input type="text" placeholder="Tìm kiếm..." class="bg-transparent border-none outline-none w-full ml-2 text-sm text-slate-700 placeholder-slate-400">
+                    <input type="text" placeholder="TÃ¬m kiáº¿m..." class="bg-transparent border-none outline-none w-full ml-2 text-sm text-slate-700 placeholder-slate-400">
                 </div>
             </div>
 
@@ -204,3 +218,4 @@
     </div>
 </body>
 </html>
+

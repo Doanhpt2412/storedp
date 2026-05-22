@@ -73,7 +73,7 @@
                                 <div class="flex flex-wrap items-center gap-2 text-xs text-gray-400">
                                     <span>{{ $post['category_name'] ?? 'Tin tức' }}</span>
                                     @if($post['published_at'])
-                                        <span>•</span>
+                                        <span>&bull;</span>
                                         <span>{{ $post['published_at'] }}</span>
                                     @endif
                                 </div>
@@ -95,6 +95,59 @@
                 <span class="text-xs font-bold uppercase tracking-wider text-gray-400">{{ count($products) }} sản phẩm</span>
             </div>
 
+            @if($query !== '')
+                <form action="{{ route('search') }}" method="get" class="flex flex-wrap items-center justify-between gap-4 rounded-xl border border-gray-200 bg-white p-4">
+                    <input type="hidden" name="s" value="{{ $query }}">
+
+                    <div class="flex flex-wrap items-center gap-3">
+                        <span class="mr-1 text-xs font-bold uppercase tracking-wide text-gray-400">Lọc theo:</span>
+
+                        <select name="brand" onchange="this.form.submit()" class="cursor-pointer rounded-full border border-gray-200 bg-gray-50 px-4 py-1.5 text-xs font-semibold text-gray-700 outline-none transition hover:bg-gray-100">
+                            <option value="">Tất cả Hãng</option>
+                            @foreach ($filters['brands'] as $brand)
+                                <option value="{{ $brand['slug'] }}" {{ $selectedFilters['brand'] === $brand['slug'] ? 'selected' : '' }}>
+                                    {{ $brand['label'] }}
+                                </option>
+                            @endforeach
+                        </select>
+
+                        <select name="series" onchange="this.form.submit()" class="cursor-pointer rounded-full border border-gray-200 bg-gray-50 px-4 py-1.5 text-xs font-semibold text-gray-700 outline-none transition hover:bg-gray-100">
+                            <option value="">Tất cả Dòng</option>
+                            @foreach ($filters['series'] as $series)
+                                <option value="{{ $series['slug'] }}" {{ $selectedFilters['series'] === $series['slug'] ? 'selected' : '' }}>
+                                    {{ $series['label'] }}
+                                </option>
+                            @endforeach
+                        </select>
+
+                        <select name="price" onchange="this.form.submit()" class="cursor-pointer rounded-full border border-gray-200 bg-gray-50 px-4 py-1.5 text-xs font-semibold text-gray-700 outline-none transition hover:bg-gray-100">
+                            <option value="">Mức giá</option>
+                            @foreach ($filters['prices'] as $price)
+                                <option value="{{ $price['slug'] }}" {{ $selectedFilters['price'] === $price['slug'] ? 'selected' : '' }}>
+                                    {{ $price['label'] }}
+                                </option>
+                            @endforeach
+                        </select>
+                    </div>
+
+                    <div class="flex items-center gap-2">
+                        <span class="text-xs font-semibold text-gray-500">Sắp xếp theo:</span>
+                        <select name="sort" onchange="this.form.submit()" class="cursor-pointer rounded-full border border-gray-200 bg-gray-50 px-4 py-1.5 text-xs font-semibold text-gray-700 outline-none transition hover:bg-gray-100">
+                            <option value="">Mặc định</option>
+                            <option value="price-asc" {{ $selectedFilters['sort'] === 'price-asc' ? 'selected' : '' }}>Giá thấp - Cao</option>
+                            <option value="price-desc" {{ $selectedFilters['sort'] === 'price-desc' ? 'selected' : '' }}>Giá cao - Thấp</option>
+                            <option value="name-asc" {{ $selectedFilters['sort'] === 'name-asc' ? 'selected' : '' }}>Tên A-Z</option>
+                        </select>
+                    </div>
+                </form>
+
+                @if(request()->filled('brand') || request()->filled('series') || request()->filled('price') || request()->filled('sort'))
+                    <div class="flex items-center justify-end">
+                        <a href="{{ route('search', ['s' => $query]) }}" class="text-xs font-bold text-orange-600 hover:underline">Xóa tất cả bộ lọc</a>
+                    </div>
+                @endif
+            @endif
+
             @if($query !== '' && count($products) > 0)
                 <div class="grid grid-cols-2 gap-4 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5">
                     @foreach($products as $product)
@@ -103,8 +156,8 @@
                 </div>
             @elseif($query !== '')
                 <div class="rounded-2xl border border-gray-200 bg-white p-12 text-center shadow-sm">
-                    <h3 class="text-base font-bold text-gray-900">Không tìm thấy sản phẩm phù hợp</h3>
-                    <p class="mt-2 text-sm text-gray-500">Thử tìm bằng tên ngắn hơn, tên hãng hoặc tên dòng sản phẩm.</p>
+                <h3 class="text-base font-bold text-gray-900">Không tìm thấy sản phẩm phù hợp</h3>
+                <p class="mt-2 text-sm text-gray-500">Thử tìm bằng tên ngắn hơn, tên hãng hoặc tên dòng sản phẩm.</p>
                 </div>
             @endif
         </section>

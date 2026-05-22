@@ -93,6 +93,9 @@
                             <td class="px-6 py-4 whitespace-nowrap">
                                 <div class="text-sm font-bold text-red-600">{{ number_format($order->total, 0, ',', '.') }}đ</div>
                                 <div class="text-xs text-slate-500">{{ $order->delivery_label }}</div>
+                                @if ($order->promotion_code)
+                                    <div class="text-xs text-emerald-600 font-medium mt-1">{{ $order->promotion_code }} - giảm {{ $order->discount_percentage }}%</div>
+                                @endif
                             </td>
                             <td class="px-6 py-4 whitespace-nowrap">
                                 @php

@@ -101,6 +101,14 @@
                         <span class="text-slate-500">Phí giao hàng:</span>
                         <span class="font-medium text-emerald-600">Miễn phí</span>
                     </div>
+                    <div class="flex justify-between text-sm mb-2">
+                        <span class="text-slate-500">Mã khuyến mãi:</span>
+                        <span class="font-medium text-slate-900">{{ $order->promotion_code ?: 'Không áp dụng' }}</span>
+                    </div>
+                    <div class="flex justify-between text-sm mb-2">
+                        <span class="text-slate-500">Giảm giá:</span>
+                        <span class="font-medium text-emerald-600">-{{ number_format($order->discount_amount, 0, ',', '.') }}đ</span>
+                    </div>
                     <div class="flex justify-between text-base font-bold mt-4 pt-4 border-t border-slate-200">
                         <span class="text-slate-800">Tổng cộng:</span>
                         <span class="text-red-600 text-xl">{{ number_format($order->total, 0, ',', '.') }}đ</span>
