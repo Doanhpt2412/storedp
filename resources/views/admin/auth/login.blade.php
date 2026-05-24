@@ -7,27 +7,20 @@
             </a>
             <h1 class="text-xl font-bold text-slate-800">Chào mừng trở lại!</h1>
             <p class="text-sm text-slate-500 mt-2">Vui lòng đăng nhập để truy cập trang quản trị.</p>
+            @if (session('login_error'))
+                <p class="mt-3 text-sm text-rose-600 font-medium">{{ session('login_error') }}</p>
+            @endif
         </div>
 
         <!-- Form -->
         <div class="p-6 sm:p-8">
-            @if ($errors->any())
-                <div class="mb-4 p-3 bg-red-50 border border-red-200 text-red-600 text-sm rounded-lg">
-                    <ul class="list-disc list-inside">
-                        @foreach ($errors->all() as $error)
-                            <li>{{ $error }}</li>
-                        @endforeach
-                    </ul>
-                </div>
-            @endif
-
             @if (session('status'))
                 <div class="mb-4 p-3 bg-emerald-50 border border-emerald-200 text-emerald-700 text-sm rounded-lg">
                     {{ session('status') }}
                 </div>
             @endif
 
-            <form method="POST" action="{{ route('login.submit') }}" class="space-y-5">
+            <form method="POST" action="{{ route('login.submit') }}" class="space-y-5" novalidate>
                 @csrf
                 
                 <div>
@@ -36,12 +29,14 @@
                         type="email" 
                         name="email" 
                         id="email" 
-                        class="w-full px-4 py-2.5 rounded-lg border border-slate-300 focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 outline-none transition-all text-sm"
+                        class="w-full px-4 py-2.5 rounded-lg border text-sm transition-all outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 @error('email') border-rose-500 focus:ring-rose-500/20 focus:border-rose-500 @else border-slate-300 @enderror"
                         placeholder="admin@storedp.com"
                         value="{{ old('email') }}"
-                        required 
                         autofocus
                     >
+                    @error('email')
+                        <p class="mt-2 text-sm text-rose-600">{{ $message }}</p>
+                    @enderror
                 </div>
 
                 <div>
@@ -53,10 +48,12 @@
                         type="password" 
                         name="password" 
                         id="password" 
-                        class="w-full px-4 py-2.5 rounded-lg border border-slate-300 focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 outline-none transition-all text-sm"
+                        class="w-full px-4 py-2.5 rounded-lg border text-sm transition-all outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 @error('password') border-rose-500 focus:ring-rose-500/20 focus:border-rose-500 @else border-slate-300 @enderror"
                         placeholder="••••••••"
-                        required
                     >
+                    @error('password')
+                        <p class="mt-2 text-sm text-rose-600">{{ $message }}</p>
+                    @enderror
                 </div>
 
                 <div class="flex items-center">

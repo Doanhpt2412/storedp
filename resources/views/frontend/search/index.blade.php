@@ -82,20 +82,15 @@
                     @endforeach
                 </div>
             </section>
-        @elseif($query !== '' && count($posts) === 0)
-            <section class="rounded-2xl border border-gray-200 bg-white p-12 text-center shadow-sm">
-                <h3 class="text-base font-bold text-gray-900">Không tìm thấy bài viết phù hợp</h3>
-                <p class="mt-2 text-sm text-gray-500">Thử đổi tiêu đề, đoạn trích hoặc từ khóa khác.</p>
-            </section>
         @endif
 
-        <section class="flex flex-col gap-3">
-            <div class="flex items-center justify-between">
-                <h2 class="text-base font-bold text-gray-900">Sản phẩm phù hợp</h2>
-                <span class="text-xs font-bold uppercase tracking-wider text-gray-400">{{ count($products) }} sản phẩm</span>
-            </div>
+        @if($query !== '' && count($products) > 0)
+            <section class="flex flex-col gap-3">
+                <div class="flex items-center justify-between">
+                    <h2 class="text-base font-bold text-gray-900">Sản phẩm phù hợp</h2>
+                    <span class="text-xs font-bold uppercase tracking-wider text-gray-400">{{ count($products) }} sản phẩm</span>
+                </div>
 
-            @if($query !== '')
                 <form action="{{ route('search') }}" method="get" class="flex flex-wrap items-center justify-between gap-4 rounded-xl border border-gray-200 bg-white p-4">
                     <input type="hidden" name="s" value="{{ $query }}">
 
@@ -146,20 +141,20 @@
                         <a href="{{ route('search', ['s' => $query]) }}" class="text-xs font-bold text-orange-600 hover:underline">Xóa tất cả bộ lọc</a>
                     </div>
                 @endif
-            @endif
 
-            @if($query !== '' && count($products) > 0)
                 <div class="grid grid-cols-2 gap-4 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5">
                     @foreach($products as $product)
                         <x-frontend.product-card :product="$product" />
                     @endforeach
                 </div>
-            @elseif($query !== '')
-                <div class="rounded-2xl border border-gray-200 bg-white p-12 text-center shadow-sm">
-                <h3 class="text-base font-bold text-gray-900">Không tìm thấy sản phẩm phù hợp</h3>
-                <p class="mt-2 text-sm text-gray-500">Thử tìm bằng tên ngắn hơn, tên hãng hoặc tên dòng sản phẩm.</p>
-                </div>
-            @endif
-        </section>
+            </section>
+        @endif
+
+        @if($query !== '' && count($categories) === 0 && count($posts) === 0 && count($products) === 0)
+            <section class="rounded-2xl border border-gray-200 bg-white p-12 text-center shadow-sm">
+                <h3 class="text-base font-bold text-gray-900">Không tìm thấy kết quả phù hợp</h3>
+                <p class="mt-2 text-sm text-gray-500">Thử tìm bằng từ khóa khác hoặc kiểm tra lại tên sản phẩm, hãng hoặc danh mục.</p>
+            </section>
+        @endif
     </div>
 </x-layouts.app>

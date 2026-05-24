@@ -183,7 +183,7 @@
                 
                 <div class="hidden sm:flex items-center bg-slate-100 rounded-lg px-3 py-2 w-64 border border-slate-200/60 focus-within:ring-2 focus-within:ring-blue-500/20 focus-within:border-blue-500 transition-all">
                     <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="text-slate-400"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/></svg>
-                    <input type="text" placeholder="TÃ¬m kiáº¿m..." class="bg-transparent border-none outline-none w-full ml-2 text-sm text-slate-700 placeholder-slate-400">
+                    <input type="text" placeholder="Tìm kiếm" class="bg-transparent border-none outline-none w-full ml-2 text-sm text-slate-700 placeholder-slate-400">
                 </div>
             </div>
 

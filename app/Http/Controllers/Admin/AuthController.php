@@ -115,9 +115,19 @@ class AuthController extends Controller
      */
     public function login(Request $request)
     {
+        if (! $request->filled('email') && ! $request->filled('password')) {
+            return back()
+                ->withInput()
+                ->with('login_error', 'Điền đầy đủ tài khoản và mật khẩu.');
+        }
+
         $credentials = $request->validate([
             'email' => ['required', 'email'],
             'password' => ['required'],
+        ], [
+            'email.required' => 'Tài khoản không được để trống.',
+            'email.email' => 'Địa chỉ email không hợp lệ.',
+            'password.required' => 'Mật khẩu không được để trống.',
         ]);
 
         $remember = $request->has('remember');
