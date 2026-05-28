@@ -265,7 +265,7 @@ class HomeDisplayController extends Controller
                 'image_url' => null,
             ],
             [
-                'eyebrow' => 'StoreDP Special Offer',
+                'eyebrow' => 'TechOne Special Offer',
                 'title' => 'Mua iPhone, MacBook va phu kien voi tra gop 0%',
                 'url' => route('checkout.index'),
                 'image_url' => null,

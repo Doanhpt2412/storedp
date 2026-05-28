@@ -78,7 +78,7 @@
 
         <!-- Footer -->
         <div class="bg-slate-50 py-4 text-center border-t border-slate-100">
-            <p class="text-xs text-slate-500">© 2026 StoreDP. All rights reserved.</p>
+            <p class="text-xs text-slate-500">© 2026 TechOne. All rights reserved.</p>
         </div>
     </div>
 </x-layouts.admin-auth>

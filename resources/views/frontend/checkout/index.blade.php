@@ -63,7 +63,7 @@
                                     </div>
                                     <div class="flex-1">
                                         <p class="font-bold text-gray-900">Nhận tại cửa hàng</p>
-                                        <p class="text-xs text-gray-500">Đến trực tiếp cửa hàng StoreDP</p>
+                                        <p class="text-xs text-gray-500">Đến trực tiếp cửa hàng TechOne</p>
                                     </div>
                                 </div>
                             </label>

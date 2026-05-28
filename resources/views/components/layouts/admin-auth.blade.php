@@ -3,13 +3,13 @@
 <head>
     @php
         $site = array_merge([
-            'site_name' => config('app.name', 'StoreDP'),
+            'site_name' => config('app.name', 'TechOne'),
             'favicon_url' => null,
         ], app(\App\Support\SiteSettings::class)->group('site'));
     @endphp
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>{{ $title ?? 'Admin Login' }} | {{ config('app.name', 'StoreDP') }}</title>
+    <title>{{ $title ?? 'Admin Login' }} | {{ config('app.name', 'TechOne') }}</title>
     @if (!empty($site['favicon_url']))
         <link rel="icon" href="{{ $site['favicon_url'] }}">
     @endif

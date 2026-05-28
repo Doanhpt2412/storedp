@@ -9,7 +9,7 @@
         </div>
 
         <h1 class="text-3xl font-extrabold text-gray-900 mb-2 tracking-tight">Đặt hàng thành công!</h1>
-        <p class="text-gray-500 mb-8 max-w-lg mx-auto">Cảm ơn <span class="font-bold text-gray-900">{{ $order->customer_name }}</span> đã tin tưởng mua sắm tại StoreDP. Yêu cầu đặt hàng của bạn đã được tiếp nhận và đang chờ xử lý.</p>
+        <p class="text-gray-500 mb-8 max-w-lg mx-auto">Cảm ơn <span class="font-bold text-gray-900">{{ $order->customer_name }}</span> đã tin tưởng mua sắm tại TechOne. Yêu cầu đặt hàng của bạn đã được tiếp nhận và đang chờ xử lý.</p>
 
         <!-- Order Code Card (Glassmorphic) -->
         <div class="bg-gradient-to-br from-slate-900 to-slate-800 rounded-3xl p-8 shadow-2xl relative overflow-hidden mb-10 text-left border border-slate-700">
